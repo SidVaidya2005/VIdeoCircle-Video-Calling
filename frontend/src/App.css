@@ -1,5 +1,5 @@
 /* ================================================================
-   LANDING PAGE
+   LANDING PAGE — BRUTALIST ASCII EDITION
    ================================================================ */
 
 .landingPageContainer {
@@ -7,190 +7,205 @@
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  color: var(--text);
-  background: var(--bg);
+  background: #080808;
 }
 
-/* Ambient background orbs */
-.landingOrb {
+.asciiCanvas {
   position: absolute;
-  border-radius: 50%;
+  inset: 0;
+  z-index: 1;
   pointer-events: none;
-  filter: blur(90px);
 }
 
-.landingOrb1 {
-  width: 700px;
-  height: 700px;
-  top: -300px;
-  right: -200px;
-  background: radial-gradient(circle, rgba(0, 200, 255, 0.09) 0%, transparent 65%);
-  animation: ambientFloat 14s ease-in-out infinite;
+/* Vignette so title text pops over the matrix */
+.landingOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background:
+    radial-gradient(ellipse at 50% 60%, rgba(8, 8, 8, 0.08) 0%, rgba(8, 8, 8, 0.45) 100%),
+    linear-gradient(to bottom, rgba(8,8,8,0.35) 0%, transparent 18%, transparent 75%, rgba(8,8,8,0.4) 100%);
+  pointer-events: none;
 }
 
-.landingOrb2 {
-  width: 550px;
-  height: 550px;
-  bottom: -200px;
-  left: -100px;
-  background: radial-gradient(circle, rgba(255, 157, 66, 0.07) 0%, transparent 65%);
-  animation: ambientFloat 18s ease-in-out infinite reverse;
-  animation-delay: -6s;
-}
-
-@keyframes ambientFloat {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  30% { transform: translate(25px, -35px) scale(1.04); }
-  60% { transform: translate(-18px, 20px) scale(0.97); }
-}
-
-.landingPageContainer nav {
+/* Flex column wrapper — sits above canvas */
+.landingContent {
   position: relative;
   z-index: 10;
-  padding: 1.2rem 2rem;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Top bar ── */
+.landingTopBar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(7, 8, 15, 0.55);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 1.1rem 2rem;
+  border-bottom: 1px solid rgba(212, 160, 23, 0.12);
 }
 
-.landingPageContainer nav .navHeader h2 {
-  font-family: var(--font-display);
-  font-size: 1.45rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--text);
+.bracketLabel {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: #D4A017;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
-.landingPageContainer nav .navHeader h2 span {
-  color: var(--accent);
+.landingBrand {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: rgba(212, 160, 23, 0.88);
+  letter-spacing: 0.06em;
 }
 
-.landingPageContainer nav .navlist {
+.landingTopRight {
   display: flex;
-  gap: 0.4rem;
+  gap: 1rem;
   align-items: center;
+}
+
+.navLinkBracket {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: #D4A017;
+  letter-spacing: 0.1em;
   cursor: pointer;
+  border: 1px solid rgba(212, 160, 23, 0.7);
+  padding: 0.3rem 0.65rem;
+  transition: all 0.18s ease;
+  user-select: none;
 }
 
-.landingPageContainer nav .navlist > p {
-  font-family: var(--font-body);
-  font-size: 0.9rem;
-  font-weight: 500;
-  padding: 0.5rem 1rem;
-  border-radius: var(--radius-sm);
-  transition: all 0.2s ease;
-  color: var(--text-sub);
+.navLinkBracket:hover {
+  color: #080808;
+  border-color: #D4A017;
+  background: #D4A017;
 }
 
-.landingPageContainer nav .navlist > p:hover {
-  color: var(--text);
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.landingPageContainer nav .navlist div[role='button'] {
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.23, 1, 0.32, 1);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.07);
-}
-
-.landingPageContainer nav .navlist div[role='button']:hover {
-  background: rgba(0, 200, 255, 0.1);
-  border-color: rgba(0, 200, 255, 0.3);
-  box-shadow: 0 4px 24px rgba(0, 200, 255, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  transform: translateY(-1px);
-}
-
-.landingPageContainer nav .navlist div[role='button'] p {
-  font-family: var(--font-body);
-  font-size: 0.9rem;
-  font-weight: 500;
-  padding: 0.5rem 1.1rem;
-  color: var(--text);
-}
-
-.landingMainContainer {
+/* ── Hero ── */
+.landingHero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0.5rem 2rem 0;
   position: relative;
-  z-index: 5;
+}
+
+.heroScript {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  font-size: clamp(1.3rem, 2.2vw, 2rem);
+  color: rgba(212, 160, 23, 0.55);
+  margin-bottom: 0.4rem;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+
+.heroTitle {
+  display: flex;
+  flex-direction: column;
+  line-height: 0.88;
+  margin: 0;
+  padding: 0;
+}
+
+.heroLine {
+  font-family: 'Anton', 'Syne', sans-serif;
+  font-size: clamp(5.5rem, 19vw, 22vw);
+  font-weight: 400;
+  color: #D4A017;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  line-height: 0.88;
+  display: block;
+  /* Subtle shadow so it lifts off the matrix */
+  text-shadow:
+    0 0 80px rgba(212, 160, 23, 0.25),
+    0 4px 40px rgba(0, 0, 0, 0.8);
+}
+
+/* Floating badge — top-right of hero area */
+.heroBadge {
+  position: absolute;
+  right: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.55rem;
+}
+
+/* ── Bottom bar ── */
+.landingBottomBar {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 0 5rem;
-  height: calc(100vh - 65px);
+  align-items: flex-end;
+  padding: 1.2rem 2rem 1.6rem;
+  border-top: 1px solid rgba(212, 160, 23, 0.1);
 }
 
-.landingMainContainer > div:first-child {
-  max-width: 540px;
+.startCta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
 }
 
-.landingMainContainer > div:first-child h1 {
-  font-family: var(--font-display);
-  font-size: clamp(2.6rem, 5vw, 4.2rem);
-  font-weight: 800;
-  line-height: 1.08;
-  letter-spacing: -0.03em;
-  color: var(--text);
-  margin-bottom: 1.1rem;
+.yearLabel {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: rgba(212, 160, 23, 0.75);
+  letter-spacing: 0.1em;
 }
 
-.landingMainContainer > div:first-child h1 span {
-  color: var(--accent);
-}
-
-.landingMainContainer > div:first-child > p {
-  font-size: 1.15rem;
-  color: var(--text-sub);
-  margin-bottom: 2.5rem;
-  line-height: 1.65;
-  font-weight: 300;
-}
-
-.landingMainContainer > div:first-child div[role='button'] {
+.startBtn {
   display: inline-block;
-  background: linear-gradient(135deg, var(--cta) 0%, #FF6B35 100%);
-  border-radius: 12px;
-  padding: 0.9rem 2.2rem;
-  box-shadow: 0 4px 28px var(--cta-glow), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: #080808;
+  background: #D4A017;
+  padding: 0.65rem 1.3rem;
   cursor: pointer;
-}
-
-.landingMainContainer > div:first-child div[role='button']:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 50px rgba(255, 157, 66, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.25);
-}
-
-.landingMainContainer > div:first-child div[role='button']:active {
-  transform: translateY(0);
-}
-
-.landingMainContainer > div:first-child div[role='button'] a {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   text-decoration: none;
-  color: white;
-  font-family: var(--font-body);
-  font-size: 1.05rem;
-  font-weight: 600;
+  border: 1px solid #D4A017;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.startBtn:hover {
+  background: transparent;
+  color: #D4A017;
+}
+
+.scrollHint {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.2rem;
+}
+
+.scrollArrow {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: rgba(212, 160, 23, 0.9);
+  text-decoration: line-through;
+  text-decoration-color: rgba(212, 160, 23, 0.5);
   letter-spacing: 0.02em;
 }
 
-.landingMainContainer > div:nth-child(2) img {
-  height: 70vh;
-  width: auto;
-  filter: drop-shadow(0 20px 80px rgba(0, 200, 255, 0.15));
-  animation: imgFloat 6s ease-in-out infinite;
-}
-
-@keyframes imgFloat {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-14px); }
+.scrollText {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: rgba(212, 160, 23, 0.72);
 }
 
 /* ================================================================
@@ -357,147 +372,169 @@
 
 .authPage {
   position: relative;
+  width: 100vw;
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   overflow: hidden;
-  background: var(--bg);
+  background: #080808;
 }
 
-.authBg {
+/* Reuses .asciiCanvas from landing */
+
+.authOverlay {
   position: absolute;
   inset: 0;
-  overflow: hidden;
+  z-index: 2;
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(8, 8, 8, 0.1) 0%, rgba(8, 8, 8, 0.48) 100%),
+    linear-gradient(to bottom, rgba(8,8,8,0.38) 0%, transparent 20%, transparent 80%, rgba(8,8,8,0.42) 100%);
   pointer-events: none;
 }
 
-.authOrb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(90px);
+.authContent {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-.authOrb1 {
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(0, 200, 255, 0.1) 0%, transparent 70%);
-  top: -250px;
-  left: -150px;
-  animation: orbFloat 12s ease-in-out infinite;
+.authTopLeft {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
-.authOrb2 {
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, rgba(255, 157, 66, 0.08) 0%, transparent 70%);
-  bottom: -200px;
-  right: -100px;
-  animation: orbFloat 16s ease-in-out infinite reverse;
-  animation-delay: -5s;
-}
-
-.authOrb3 {
-  width: 350px;
-  height: 350px;
-  background: radial-gradient(circle, rgba(130, 80, 255, 0.07) 0%, transparent 70%);
-  top: 45%;
-  left: 55%;
-  animation: orbFloat 10s ease-in-out infinite;
-  animation-delay: -3s;
-}
-
-@keyframes orbFloat {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(30px, -35px) scale(1.06); }
-  66% { transform: translate(-20px, 22px) scale(0.96); }
+.authTopBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.1rem 2rem;
+  border-bottom: 1px solid rgba(212, 160, 23, 0.12);
 }
 
 .authCard {
-  position: relative;
-  z-index: 10;
-  width: 440px;
-  max-width: 92vw;
-  padding: 2.8rem 2.5rem;
-  background: rgba(13, 16, 28, 0.6);
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 22px;
-  box-shadow:
-    0 30px 100px rgba(0, 0, 0, 0.55),
-    0 0 0 1px rgba(255, 255, 255, 0.03),
-    inset 0 1px 0 rgba(255, 255, 255, 0.07);
-}
-
-.authCardInner {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem 4rem;
 }
 
-.authTitle {
-  font-family: var(--font-display);
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: var(--text);
-  margin-top: 0.75rem;
-  letter-spacing: -0.025em;
+.authCardHeader {
+  margin-bottom: 2rem;
+  text-align: center;
 }
 
-.authSubtitle {
-  font-size: 0.9rem;
-  color: var(--text-sub);
-  margin-top: 0.3rem;
-  margin-bottom: 1.5rem;
-  font-weight: 300;
+.authScript {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  font-size: clamp(1rem, 1.8vw, 1.4rem);
+  color: rgba(212, 160, 23, 0.55);
+  margin-bottom: 0.2rem;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+
+.authCardTitle {
+  font-family: 'Anton', 'Syne', sans-serif;
+  font-size: clamp(3.5rem, 10vw, 8rem);
+  font-weight: 400;
+  color: #D4A017;
+  text-transform: uppercase;
+  line-height: 0.88;
+  letter-spacing: -0.01em;
+  text-shadow:
+    0 0 60px rgba(212, 160, 23, 0.2),
+    0 4px 30px rgba(0, 0, 0, 0.8);
+}
+
+.authFormBox {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.authFormPanel {
+  width: 100%;
+  max-width: 420px;
+  background: rgba(4, 4, 4, 0.82);
+  border: 1px solid rgba(212, 160, 23, 0.22);
+  padding: 0 1.8rem 1.8rem;
 }
 
 .authTabs {
   display: flex;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 10px;
-  padding: 4px;
-  gap: 4px;
-  margin-bottom: 0.75rem;
-  width: 100%;
+  gap: 0;
+  margin: 0 -1.8rem 1.8rem;
+  width: calc(100% + 3.6rem);
+  border-bottom: 1px solid rgba(212, 160, 23, 0.22);
 }
 
 .authTab {
   flex: 1;
-  padding: 0.55rem 1rem;
+  padding: 0.75rem 1rem;
   border: none;
-  border-radius: 7px;
   background: transparent;
-  color: var(--text-sub);
-  font-family: var(--font-body);
-  font-size: 0.88rem;
-  font-weight: 500;
+  color: rgba(212, 160, 23, 0.75);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+  transition: all 0.18s ease;
+  text-transform: uppercase;
+}
+
+.authTab:not(:last-child) {
+  border-right: 1px solid rgba(212, 160, 23, 0.22);
 }
 
 .authTab.active {
-  background: rgba(0, 200, 255, 0.12);
-  color: var(--accent);
-  box-shadow: inset 0 1px 0 rgba(0, 200, 255, 0.15);
+  background: #D4A017;
+  color: #080808;
+  font-weight: 700;
 }
 
 .authTab:not(.active):hover {
-  color: var(--text);
-  background: rgba(255, 255, 255, 0.04);
+  color: #D4A017;
+  background: rgba(212, 160, 23, 0.08);
+}
+
+.authSubmitBtn {
+  width: 100%;
+  margin-top: 1.5rem;
+  padding: 0.9rem 1.5rem;
+  background: #D4A017;
+  color: #080808;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px solid #D4A017;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: block;
+}
+
+.authSubmitBtn:hover {
+  background: transparent;
+  color: #D4A017;
 }
 
 .authError {
   color: #FF7070;
-  font-size: 0.83rem;
-  margin-top: 0.5rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  margin-top: 0.75rem;
   padding: 0.5rem 0.8rem;
-  background: rgba(255, 112, 112, 0.08);
-  border: 1px solid rgba(255, 112, 112, 0.2);
-  border-radius: 8px;
+  background: rgba(255, 112, 112, 0.06);
+  border: 1px solid rgba(255, 112, 112, 0.25);
   width: 100%;
+  letter-spacing: 0.02em;
 }
 
 /* ================================================================

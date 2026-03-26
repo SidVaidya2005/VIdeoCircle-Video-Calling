@@ -1,37 +1,39 @@
 import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { AuthContext } from '../contexts/AuthContext';
 import { Snackbar } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import '../App.css';
 
-const darkTheme = createTheme({
+const goldTheme = createTheme({
     palette: {
         mode: 'dark',
-        primary: { main: '#00C8FF', contrastText: '#07080F' },
-        secondary: { main: '#FF9D42' },
-        background: { default: '#07080F', paper: 'rgba(13, 16, 28, 0.6)' },
-        text: { primary: '#DDE6F0', secondary: 'rgba(221,230,240,0.55)' },
+        primary: { main: '#D4A017', contrastText: '#080808' },
+        background: { default: '#080808', paper: 'rgba(8, 8, 8, 0.8)' },
+        text: { primary: '#D4A017', secondary: 'rgba(212, 160, 23, 0.55)' },
     },
-    typography: { fontFamily: "'DM Sans', sans-serif" },
-    shape: { borderRadius: 10 },
+    typography: { fontFamily: "'JetBrains Mono', monospace" },
+    shape: { borderRadius: 0 },
     components: {
         MuiOutlinedInput: {
             styleOverrides: {
                 root: {
-                    background: 'rgba(255,255,255,0.03)',
+                    background: 'rgba(212, 160, 23, 0.03)',
+                    borderRadius: '0 !important',
+                    fontFamily: "'JetBrains Mono', monospace",
+                    fontSize: '0.87rem',
+                    color: '#D4A017',
                     '& .MuiOutlinedInput-notchedOutline': {
-                        borderColor: 'rgba(255,255,255,0.1)',
+                        borderColor: 'rgba(212, 160, 23, 0.25)',
+                        borderRadius: 0,
                     },
                     '&:hover .MuiOutlinedInput-notchedOutline': {
-                        borderColor: 'rgba(0,200,255,0.35)',
+                        borderColor: 'rgba(212, 160, 23, 0.6)',
                     },
                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                        borderColor: '#00C8FF',
+                        borderColor: '#D4A017',
                         borderWidth: '1px',
                     },
                 },
@@ -40,36 +42,20 @@ const darkTheme = createTheme({
         MuiInputLabel: {
             styleOverrides: {
                 root: {
-                    color: 'rgba(221,230,240,0.5)',
-                    fontFamily: "'DM Sans', sans-serif",
-                    '&.Mui-focused': { color: '#00C8FF' },
+                    color: 'rgba(212, 160, 23, 0.45)',
+                    fontFamily: "'JetBrains Mono', monospace",
+                    fontSize: '0.82rem',
+                    letterSpacing: '0.06em',
+                    '&.Mui-focused': { color: '#D4A017' },
                 },
             },
         },
         MuiInputBase: {
             styleOverrides: {
                 input: {
-                    color: '#DDE6F0',
-                    fontFamily: "'DM Sans', sans-serif",
-                },
-            },
-        },
-        MuiButton: {
-            styleOverrides: {
-                contained: {
-                    background: 'linear-gradient(135deg, #00C8FF 0%, #0099CC 100%)',
-                    color: '#07080F',
-                    fontWeight: 700,
-                    fontSize: '0.97rem',
-                    fontFamily: "'DM Sans', sans-serif",
-                    textTransform: 'none',
-                    boxShadow: '0 4px 24px rgba(0,200,255,0.22)',
-                    transition: 'all 0.25s cubic-bezier(0.23, 1, 0.32, 1)',
-                    '&:hover': {
-                        background: 'linear-gradient(135deg, #33D4FF 0%, #00C8FF 100%)',
-                        boxShadow: '0 8px 40px rgba(0,200,255,0.42)',
-                        transform: 'translateY(-1px)',
-                    },
+                    color: '#D4A017',
+                    fontFamily: "'JetBrains Mono', monospace",
+                    letterSpacing: '0.04em',
                 },
             },
         },
@@ -86,6 +72,61 @@ export default function Authentication() {
     const [open, setOpen] = React.useState(false);
 
     const { handleRegister, handleLogin } = React.useContext(AuthContext);
+    const canvasRef = React.useRef(null);
+    const router = useNavigate();
+
+    React.useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+
+        const CHARS = 'VIDEOCIRCL·=+-*·N·U·S·E·I·2·0·1·6·····=·+·-·*·V·I·D·E·O·C·';
+        const FONT_SIZE = 13;
+        const CHAR_W = FONT_SIZE * 0.62;
+
+        let cols, rows, grid;
+
+        const initGrid = () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            cols = Math.ceil(canvas.width / CHAR_W);
+            rows = Math.ceil(canvas.height / FONT_SIZE);
+            grid = Array.from({ length: rows * cols }, () =>
+                CHARS[Math.floor(Math.random() * CHARS.length)]
+            );
+        };
+
+        initGrid();
+
+        const draw = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.font = `${FONT_SIZE}px 'JetBrains Mono', monospace`;
+            ctx.fillStyle = 'rgba(185, 138, 18, 0.42)';
+
+            const updateCount = Math.max(1, Math.floor(grid.length * 0.008));
+            for (let i = 0; i < updateCount; i++) {
+                const idx = Math.floor(Math.random() * grid.length);
+                grid[idx] = CHARS[Math.floor(Math.random() * CHARS.length)];
+            }
+
+            for (let i = 0; i < grid.length; i++) {
+                const r = Math.floor(i / cols);
+                const c = i % cols;
+                ctx.fillText(grid[i], c * CHAR_W, (r + 1) * FONT_SIZE);
+            }
+        };
+
+        let interval = setInterval(draw, 80);
+        draw();
+
+        const handleResize = () => { initGrid(); draw(); };
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            clearInterval(interval);
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
 
     let handleAuth = async () => {
         try {
@@ -109,86 +150,100 @@ export default function Authentication() {
         }
     };
 
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') handleAuth();
+    };
+
     return (
-        <ThemeProvider theme={darkTheme}>
+        <ThemeProvider theme={goldTheme}>
             <div className="authPage">
-                <div className="authBg">
-                    <div className="authOrb authOrb1" />
-                    <div className="authOrb authOrb2" />
-                    <div className="authOrb authOrb3" />
-                </div>
+                <canvas ref={canvasRef} className="asciiCanvas" />
+                <div className="authOverlay" />
 
-                <div className="authCard">
-                    <div className="authCardInner">
-                        <Avatar sx={{ m: 1, bgcolor: 'primary.main', color: '#07080F', width: 48, height: 48 }}>
-                            <LockOutlinedIcon />
-                        </Avatar>
+                <div className="authContent">
+                    {/* Top bar */}
+                    <header className="authTopBar">
+                        <nav className="authTopLeft">
+                            <span className="navLinkBracket" onClick={() => router("/")}>
+                                [HOME]
+                            </span>
+                            <span className="bracketLabel">[V_C_26]</span>
+                        </nav>
+                        <span className="landingBrand">VideoCircle®</span>
+                        <span className="bracketLabel">[AUTH]</span>
+                    </header>
 
-                        <h2 className="authTitle">
-                            {formState === 0 ? 'Welcome back' : 'Create account'}
-                        </h2>
-                        <p className="authSubtitle">
-                            {formState === 0 ? 'Sign in to continue' : 'Join Apna Video Call'}
-                        </p>
-
-                        <div className="authTabs">
-                            <button
-                                className={`authTab${formState === 0 ? ' active' : ''}`}
-                                onClick={() => setFormState(0)}
-                            >
-                                Sign In
-                            </button>
-                            <button
-                                className={`authTab${formState === 1 ? ' active' : ''}`}
-                                onClick={() => setFormState(1)}
-                            >
-                                Sign Up
-                            </button>
+                    {/* Card */}
+                    <div className="authCard">
+                        <div className="authCardHeader">
+                            <p className="authScript">
+                                {formState === 0 ? 'welcome back,' : 'join the circle,'}
+                            </p>
+                            <h2 className="authCardTitle">
+                                {formState === 0 ? 'SIGN IN' : 'REGISTER'}
+                            </h2>
                         </div>
 
-                        <Box component="form" noValidate sx={{ mt: 0.5, width: '100%' }}>
-                            {formState === 1 && (
+                        {/* Form panel with dark backdrop */}
+                        <div className="authFormPanel">
+                            {/* Tabs */}
+                            <div className="authTabs">
+                                <button
+                                    className={`authTab${formState === 0 ? ' active' : ''}`}
+                                    onClick={() => setFormState(0)}
+                                >
+                                    [SIGN IN]
+                                </button>
+                                <button
+                                    className={`authTab${formState === 1 ? ' active' : ''}`}
+                                    onClick={() => setFormState(1)}
+                                >
+                                    [REGISTER]
+                                </button>
+                            </div>
+
+                            <Box component="form" noValidate sx={{ width: '100%' }} onKeyDown={handleKeyDown}>
+                                {formState === 1 && (
+                                    <TextField
+                                        margin="normal"
+                                        required
+                                        fullWidth
+                                        label="Full Name"
+                                        value={name}
+                                        autoFocus
+                                        onChange={(e) => setName(e.target.value)}
+                                    />
+                                )}
                                 <TextField
                                     margin="normal"
                                     required
                                     fullWidth
-                                    label="Full Name"
-                                    value={name}
-                                    autoFocus
-                                    onChange={(e) => setName(e.target.value)}
+                                    label="Username"
+                                    value={username}
+                                    autoFocus={formState === 0}
+                                    onChange={(e) => setUsername(e.target.value)}
                                 />
-                            )}
-                            <TextField
-                                margin="normal"
-                                required
-                                fullWidth
-                                label="Username"
-                                value={username}
-                                autoFocus={formState === 0}
-                                onChange={(e) => setUsername(e.target.value)}
-                            />
-                            <TextField
-                                margin="normal"
-                                required
-                                fullWidth
-                                label="Password"
-                                value={password}
-                                type="password"
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
+                                <TextField
+                                    margin="normal"
+                                    required
+                                    fullWidth
+                                    label="Password"
+                                    value={password}
+                                    type="password"
+                                    onChange={(e) => setPassword(e.target.value)}
+                                />
 
-                            {error && <p className="authError">{error}</p>}
+                                {error && <p className="authError">{error}</p>}
 
-                            <Button
-                                type="button"
-                                fullWidth
-                                variant="contained"
-                                sx={{ mt: 3, mb: 1, py: 1.5 }}
-                                onClick={handleAuth}
-                            >
-                                {formState === 0 ? 'Sign In' : 'Create Account'}
-                            </Button>
-                        </Box>
+                                <button
+                                    type="button"
+                                    className="authSubmitBtn"
+                                    onClick={handleAuth}
+                                >
+                                    {formState === 0 ? '[SIGN IN →]' : '[CREATE ACCOUNT →]'}
+                                </button>
+                            </Box>
+                        </div>
                     </div>
                 </div>
             </div>
