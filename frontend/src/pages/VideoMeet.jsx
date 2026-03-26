@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom';
 import io from "socket.io-client";
 import { Badge, IconButton, TextField } from '@mui/material';
 import { Button } from '@mui/material';
@@ -24,6 +25,8 @@ const peerConfigConnections = {
 }
 
 export default function VideoMeetComponent() {
+
+    const navigate = useNavigate();
 
     var socketRef = useRef();
     let socketIdRef = useRef();
@@ -55,6 +58,7 @@ export default function VideoMeetComponent() {
     let [username, setUsername] = useState("");
 
     const videoRef = useRef([])
+    const lobbyCanvasRef = useRef(null)
 
     let [videos, setVideos] = useState([])
 
@@ -63,6 +67,41 @@ export default function VideoMeetComponent() {
 
 
     // }
+
+    useEffect(() => {
+        const canvas = lobbyCanvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const CHARS = 'VIDEOCIRCL·=+-*·N·U·S·E·I·2·0·1·6·····=·+·-·*·V·I·D·E·O·C·';
+        const FONT_SIZE = 13;
+        const CHAR_W = FONT_SIZE * 0.62;
+        let cols, rows, grid;
+        const initGrid = () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            cols = Math.ceil(canvas.width / CHAR_W);
+            rows = Math.ceil(canvas.height / FONT_SIZE);
+            grid = Array.from({ length: rows * cols }, () => CHARS[Math.floor(Math.random() * CHARS.length)]);
+        };
+        initGrid();
+        const draw = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.font = `${FONT_SIZE}px 'JetBrains Mono', monospace`;
+            ctx.fillStyle = 'rgba(185, 138, 18, 0.42)';
+            const updateCount = Math.max(1, Math.floor(grid.length * 0.008));
+            for (let i = 0; i < updateCount; i++) {
+                grid[Math.floor(Math.random() * grid.length)] = CHARS[Math.floor(Math.random() * CHARS.length)];
+            }
+            for (let i = 0; i < grid.length; i++) {
+                ctx.fillText(grid[i], (i % cols) * CHAR_W, (Math.floor(i / cols) + 1) * FONT_SIZE);
+            }
+        };
+        const interval = setInterval(draw, 80);
+        draw();
+        const handleResize = () => { initGrid(); draw(); };
+        window.addEventListener('resize', handleResize);
+        return () => { clearInterval(interval); window.removeEventListener('resize', handleResize); };
+    }, []);
 
     useEffect(() => {
         console.log("HELLO")
@@ -452,6 +491,16 @@ export default function VideoMeetComponent() {
             {askForUsername === true ?
 
                 <div className={styles.lobbyContainer}>
+                    <canvas ref={lobbyCanvasRef} className={styles.lobbyCanvas} />
+                    <div className={styles.lobbyOverlay} />
+                    <header className={styles.lobbyTopBar}>
+                        <nav className={styles.lobbyTopLeft}>
+                            <span className={styles.lobbyHomeBtn} onClick={() => navigate('/')}>[HOME]</span>
+                            <span className={styles.lobbyBracketLabel}>[V_C_26]</span>
+                        </nav>
+                        <span className={styles.lobbyBrand}>VideoCircle®</span>
+                        <span className={styles.lobbyBracketLabel}>[LOBBY]</span>
+                    </header>
                     <h2>Enter into Lobby</h2>
                     <div className={styles.lobbyCard}>
                         <div className={styles.lobbyInputRow}>
@@ -465,36 +514,68 @@ export default function VideoMeetComponent() {
                                 sx={{
                                     flex: 1,
                                     '& .MuiOutlinedInput-root': {
-                                        background: 'rgba(255,255,255,0.04)',
-                                        color: '#DDE6F0',
-                                        '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' },
-                                        '&:hover fieldset': { borderColor: 'rgba(0,200,255,0.35)' },
-                                        '&.Mui-focused fieldset': { borderColor: '#00C8FF' },
+                                        background: 'rgba(212,160,23,0.03)',
+                                        color: '#D4A017',
+                                        borderRadius: 0,
+                                        fontFamily: "'JetBrains Mono', monospace",
+                                        fontSize: '0.87rem',
+                                        '& fieldset': { borderColor: 'rgba(212,160,23,0.25)', borderRadius: 0 },
+                                        '&:hover fieldset': { borderColor: 'rgba(212,160,23,0.6)' },
+                                        '&.Mui-focused fieldset': { borderColor: '#D4A017', borderWidth: '1px' },
                                     },
-                                    '& .MuiInputLabel-root': { color: 'rgba(221,230,240,0.5)' },
-                                    '& .MuiInputLabel-root.Mui-focused': { color: '#00C8FF' },
+                                    '& .MuiInputLabel-root': {
+                                        color: 'rgba(212,160,23,0.45)',
+                                        fontFamily: "'JetBrains Mono', monospace",
+                                        fontSize: '0.82rem',
+                                        letterSpacing: '0.06em',
+                                    },
+                                    '& .MuiInputLabel-root.Mui-focused': { color: '#D4A017' },
+                                    '& .MuiInputBase-input': {
+                                        color: '#D4A017',
+                                        fontFamily: "'JetBrains Mono', monospace",
+                                        letterSpacing: '0.08em',
+                                    },
                                 }}
                             />
                             <Button
                                 variant="contained"
                                 onClick={connect}
                                 sx={{
-                                    background: 'linear-gradient(135deg, #00C8FF, #0099CC)',
-                                    color: '#07080F',
+                                    background: '#D4A017',
+                                    color: '#080808',
                                     fontWeight: 700,
+                                    fontFamily: "'JetBrains Mono', monospace",
+                                    letterSpacing: '0.06em',
                                     textTransform: 'none',
-                                    borderRadius: '8px',
-                                    boxShadow: '0 4px 20px rgba(0,200,255,0.25)',
+                                    borderRadius: 0,
+                                    boxShadow: 'none',
                                     '&:hover': {
-                                        background: 'linear-gradient(135deg, #33D4FF, #00C8FF)',
-                                        boxShadow: '0 8px 32px rgba(0,200,255,0.4)',
+                                        background: '#080808',
+                                        color: '#D4A017',
+                                        boxShadow: 'inset 0 0 0 1px #D4A017',
                                     }
                                 }}
                             >
-                                Join
+                                [JOIN]
                             </Button>
                         </div>
                         <video className={styles.lobbyVideo} ref={localVideoref} autoPlay muted></video>
+                        <div className={styles.lobbyMediaControls}>
+                            <button
+                                type="button"
+                                className={`${styles.lobbyMediaBtn} ${!videoAvailable || video === false ? styles.lobbyMediaBtnOff : styles.lobbyMediaBtnOn}`}
+                                onClick={() => setVideo(v => v === false ? videoAvailable : false)}
+                            >
+                                [camera]
+                            </button>
+                            <button
+                                type="button"
+                                className={`${styles.lobbyMediaBtn} ${!audioAvailable || audio === false ? styles.lobbyMediaBtnOff : styles.lobbyMediaBtnOn}`}
+                                onClick={() => setAudio(a => a === false ? audioAvailable : false)}
+                            >
+                                [mic]
+                            </button>
+                        </div>
                     </div>
                 </div> :
 

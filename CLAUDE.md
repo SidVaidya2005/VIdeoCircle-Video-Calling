@@ -39,11 +39,13 @@ The frontend communicates with the backend via two channels:
 
 ### Video Call Flow
 
-1. User enters a meeting code on `/home` → navigates to `/:meetingCode`
-2. `VideoMeet.jsx` requests camera/mic via `getUserMedia`, then connects via Socket.IO
-3. Server maintains `connections[path]` (socket IDs per room) and notifies existing peers
-4. Peers exchange SDP via `signal` events through the server; direct WebRTC connections form
-5. STUN server: `stun:stun.l.google.com:19302`
+1. User enters a meeting code on `/home` (or `/guest`) → navigates to `/:meetingCode`
+2. `VideoMeet.jsx` shows a **lobby screen** — ASCII canvas background, topbar with `[HOME]`, name input, camera/mic toggle buttons, and live video preview
+3. User toggles camera/mic on/off in the lobby before joining, then clicks `[JOIN]`
+4. Component requests camera/mic via `getUserMedia`, then connects via Socket.IO
+5. Server maintains `connections[path]` (socket IDs per room) and notifies existing peers
+6. Peers exchange SDP via `signal` events through the server; direct WebRTC connections form
+7. STUN server: `stun:stun.l.google.com:19302`
 
 ### Authentication
 
@@ -71,8 +73,9 @@ PORT=8000  # optional
 | `backend/src/controllers/user.controller.js` | Auth + history API handlers |
 | `frontend/src/App.js` | Route definitions |
 | `frontend/src/contexts/AuthContext.jsx` | Auth context + Axios client |
-| `frontend/src/pages/VideoMeet.jsx` | Main video call component |
+| `frontend/src/pages/VideoMeet.jsx` | Video call component — lobby screen (ASCII canvas, topbar with `[HOME]`, name input, camera/mic toggles, video preview) + in-call view |
+| `frontend/src/styles/videoComponent.module.css` | All styles for the lobby and in-call screens |
 | `frontend/src/pages/landing.jsx` | Landing page (`/`) — ASCII canvas, top nav with `[JOIN AS GUEST]`, `[REGISTER]`, `[LOGIN]` |
-| `frontend/src/pages/authentication.jsx` | Auth page (`/auth`) — sign in + register tabs |
-| `frontend/src/pages/guest.jsx` | Guest join page (`/guest`) — unprotected, no history tracking |
+| `frontend/src/pages/authentication.jsx` | Auth page (`/auth`) — sign in + register tabs, topbar with `[HOME]` |
+| `frontend/src/pages/guest.jsx` | Guest join page (`/guest`) — unprotected, no history tracking, gold ASCII aesthetic |
 | `frontend/src/environment.js` | Backend URL config (toggle `IS_PROD`) |
