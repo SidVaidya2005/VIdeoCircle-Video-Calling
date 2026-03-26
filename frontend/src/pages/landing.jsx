@@ -74,7 +74,7 @@ export default function LandingPage() {
                     <span className="bracketLabel">[V_C_26]</span>
                     <span className="landingBrand">VideoCircle®</span>
                     <nav className="landingTopRight">
-                        <span className="navLinkBracket" onClick={() => router("/home")}>
+                        <span className="navLinkBracket" onClick={() => router("/guest")}>
                             [JOIN AS GUEST]
                         </span>
                         <span className="navLinkBracket" onClick={() => router("/auth")}>

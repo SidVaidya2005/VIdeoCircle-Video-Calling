@@ -370,6 +370,73 @@
    AUTH PAGE
    ================================================================ */
 
+/* ================================================================
+   GUEST PAGE
+   ================================================================ */
+
+.guestPage {
+  position: relative;
+  width: 100vw;
+  min-height: 100vh;
+  overflow: hidden;
+  background: #080808;
+}
+
+.guestOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(8,8,8,0.1) 0%, rgba(8,8,8,0.48) 100%),
+    linear-gradient(to bottom, rgba(8,8,8,0.38) 0%, transparent 20%, transparent 80%, rgba(8,8,8,0.42) 100%);
+  pointer-events: none;
+}
+
+.guestContent {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.guestMain {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem 4rem;
+  gap: 2.5rem;
+}
+
+.guestHero {
+  text-align: center;
+}
+
+.guestTitle {
+  font-family: 'Anton', 'Syne', sans-serif;
+  font-size: clamp(3.5rem, 10vw, 7rem);
+  font-weight: 400;
+  color: #D4A017;
+  line-height: 0.88;
+  margin: 0.2rem 0 0;
+  text-align: center;
+}
+
+.guestPanel {
+  width: 100%;
+  max-width: 420px;
+  background: rgba(4, 4, 4, 0.82);
+  border: 1px solid rgba(212, 160, 23, 0.22);
+  padding: 1.8rem;
+}
+
+/* ================================================================
+   AUTH PAGE
+   ================================================================ */
+
 .authPage {
   position: relative;
   width: 100vw;
