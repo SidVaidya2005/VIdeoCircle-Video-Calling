@@ -50,6 +50,7 @@ The frontend communicates with the backend via two channels:
 - Token stored in `localStorage`; no JWT — backend looks up the token directly in MongoDB
 - `withAuth.jsx` HOC guards authenticated routes (e.g., `/home`, `/history`)
 - Passwords hashed with bcrypt (10 rounds)
+- `/guest` is an unprotected route — skips auth guard and meeting history tracking; intended for unauthenticated users joining a meeting directly
 
 ### Environment Configuration
 
@@ -71,4 +72,7 @@ PORT=8000  # optional
 | `frontend/src/App.js` | Route definitions |
 | `frontend/src/contexts/AuthContext.jsx` | Auth context + Axios client |
 | `frontend/src/pages/VideoMeet.jsx` | Main video call component |
+| `frontend/src/pages/landing.jsx` | Landing page (`/`) — ASCII canvas, top nav with `[JOIN AS GUEST]`, `[REGISTER]`, `[LOGIN]` |
+| `frontend/src/pages/authentication.jsx` | Auth page (`/auth`) — sign in + register tabs |
+| `frontend/src/pages/guest.jsx` | Guest join page (`/guest`) — unprotected, no history tracking |
 | `frontend/src/environment.js` | Backend URL config (toggle `IS_PROD`) |
