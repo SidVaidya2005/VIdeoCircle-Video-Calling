@@ -1,175 +1,199 @@
 import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
-import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { AuthContext } from '../contexts/AuthContext';
 import { Snackbar } from '@mui/material';
+import '../App.css';
 
-
-
-// TODO remove, this demo shouldn't need to reset the theme.
-
-const defaultTheme = createTheme();
+const darkTheme = createTheme({
+    palette: {
+        mode: 'dark',
+        primary: { main: '#00C8FF', contrastText: '#07080F' },
+        secondary: { main: '#FF9D42' },
+        background: { default: '#07080F', paper: 'rgba(13, 16, 28, 0.6)' },
+        text: { primary: '#DDE6F0', secondary: 'rgba(221,230,240,0.55)' },
+    },
+    typography: { fontFamily: "'DM Sans', sans-serif" },
+    shape: { borderRadius: 10 },
+    components: {
+        MuiOutlinedInput: {
+            styleOverrides: {
+                root: {
+                    background: 'rgba(255,255,255,0.03)',
+                    '& .MuiOutlinedInput-notchedOutline': {
+                        borderColor: 'rgba(255,255,255,0.1)',
+                    },
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                        borderColor: 'rgba(0,200,255,0.35)',
+                    },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                        borderColor: '#00C8FF',
+                        borderWidth: '1px',
+                    },
+                },
+            },
+        },
+        MuiInputLabel: {
+            styleOverrides: {
+                root: {
+                    color: 'rgba(221,230,240,0.5)',
+                    fontFamily: "'DM Sans', sans-serif",
+                    '&.Mui-focused': { color: '#00C8FF' },
+                },
+            },
+        },
+        MuiInputBase: {
+            styleOverrides: {
+                input: {
+                    color: '#DDE6F0',
+                    fontFamily: "'DM Sans', sans-serif",
+                },
+            },
+        },
+        MuiButton: {
+            styleOverrides: {
+                contained: {
+                    background: 'linear-gradient(135deg, #00C8FF 0%, #0099CC 100%)',
+                    color: '#07080F',
+                    fontWeight: 700,
+                    fontSize: '0.97rem',
+                    fontFamily: "'DM Sans', sans-serif",
+                    textTransform: 'none',
+                    boxShadow: '0 4px 24px rgba(0,200,255,0.22)',
+                    transition: 'all 0.25s cubic-bezier(0.23, 1, 0.32, 1)',
+                    '&:hover': {
+                        background: 'linear-gradient(135deg, #33D4FF 0%, #00C8FF 100%)',
+                        boxShadow: '0 8px 40px rgba(0,200,255,0.42)',
+                        transform: 'translateY(-1px)',
+                    },
+                },
+            },
+        },
+    },
+});
 
 export default function Authentication() {
-
-    
-
-    const [username, setUsername] = React.useState();
-    const [password, setPassword] = React.useState();
-    const [name, setName] = React.useState();
-    const [error, setError] = React.useState();
-    const [message, setMessage] = React.useState();
-
-
+    const [username, setUsername] = React.useState('');
+    const [password, setPassword] = React.useState('');
+    const [name, setName] = React.useState('');
+    const [error, setError] = React.useState('');
+    const [message, setMessage] = React.useState('');
     const [formState, setFormState] = React.useState(0);
-
-    const [open, setOpen] = React.useState(false)
-
+    const [open, setOpen] = React.useState(false);
 
     const { handleRegister, handleLogin } = React.useContext(AuthContext);
 
     let handleAuth = async () => {
         try {
             if (formState === 0) {
-
-                let result = await handleLogin(username, password)
-
-
+                await handleLogin(username, password);
             }
             if (formState === 1) {
                 let result = await handleRegister(name, username, password);
                 console.log(result);
-                setUsername("");
+                setUsername('');
                 setMessage(result);
                 setOpen(true);
-                setError("")
-                setFormState(0)
-                setPassword("")
+                setError('');
+                setFormState(0);
+                setPassword('');
             }
         } catch (err) {
-
             console.log(err);
-            let message = (err.response.data.message);
+            let message = err.response.data.message;
             setError(message);
         }
-    }
-
+    };
 
     return (
-        <ThemeProvider theme={defaultTheme}>
-            <Grid container component="main" sx={{ height: '100vh' }}>
-                <CssBaseline />
-                <Grid
-                    item
-                    xs={false}
-                    sm={4}
-                    md={7}
-                    sx={{
-                        backgroundImage: 'url(https://source.unsplash.com/random?wallpapers)',
-                        backgroundRepeat: 'no-repeat',
-                        backgroundColor: (t) =>
-                            t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                    }}
-                />
-                <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-                    <Box
-                        sx={{
-                            my: 8,
-                            mx: 4,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+        <ThemeProvider theme={darkTheme}>
+            <div className="authPage">
+                <div className="authBg">
+                    <div className="authOrb authOrb1" />
+                    <div className="authOrb authOrb2" />
+                    <div className="authOrb authOrb3" />
+                </div>
+
+                <div className="authCard">
+                    <div className="authCardInner">
+                        <Avatar sx={{ m: 1, bgcolor: 'primary.main', color: '#07080F', width: 48, height: 48 }}>
                             <LockOutlinedIcon />
                         </Avatar>
 
+                        <h2 className="authTitle">
+                            {formState === 0 ? 'Welcome back' : 'Create account'}
+                        </h2>
+                        <p className="authSubtitle">
+                            {formState === 0 ? 'Sign in to continue' : 'Join Apna Video Call'}
+                        </p>
 
-                        <div>
-                            <Button variant={formState === 0 ? "contained" : ""} onClick={() => { setFormState(0) }}>
+                        <div className="authTabs">
+                            <button
+                                className={`authTab${formState === 0 ? ' active' : ''}`}
+                                onClick={() => setFormState(0)}
+                            >
                                 Sign In
-                            </Button>
-                            <Button variant={formState === 1 ? "contained" : ""} onClick={() => { setFormState(1) }}>
+                            </button>
+                            <button
+                                className={`authTab${formState === 1 ? ' active' : ''}`}
+                                onClick={() => setFormState(1)}
+                            >
                                 Sign Up
-                            </Button>
+                            </button>
                         </div>
 
-                        <Box component="form" noValidate sx={{ mt: 1 }}>
-                            {formState === 1 ? <TextField
-                                margin="normal"
-                                required
-                                fullWidth
-                                id="username"
-                                label="Full Name"
-                                name="username"
-                                value={name}
-                                autoFocus
-                                onChange={(e) => setName(e.target.value)}
-                            /> : <></>}
-
+                        <Box component="form" noValidate sx={{ mt: 0.5, width: '100%' }}>
+                            {formState === 1 && (
+                                <TextField
+                                    margin="normal"
+                                    required
+                                    fullWidth
+                                    label="Full Name"
+                                    value={name}
+                                    autoFocus
+                                    onChange={(e) => setName(e.target.value)}
+                                />
+                            )}
                             <TextField
                                 margin="normal"
                                 required
                                 fullWidth
-                                id="username"
                                 label="Username"
-                                name="username"
                                 value={username}
-                                autoFocus
+                                autoFocus={formState === 0}
                                 onChange={(e) => setUsername(e.target.value)}
-
                             />
                             <TextField
                                 margin="normal"
                                 required
                                 fullWidth
-                                name="password"
                                 label="Password"
                                 value={password}
                                 type="password"
                                 onChange={(e) => setPassword(e.target.value)}
-
-                                id="password"
                             />
 
-                            <p style={{ color: "red" }}>{error}</p>
+                            {error && <p className="authError">{error}</p>}
 
                             <Button
                                 type="button"
                                 fullWidth
                                 variant="contained"
-                                sx={{ mt: 3, mb: 2 }}
+                                sx={{ mt: 3, mb: 1, py: 1.5 }}
                                 onClick={handleAuth}
                             >
-                                {formState === 0 ? "Login " : "Register"}
+                                {formState === 0 ? 'Sign In' : 'Create Account'}
                             </Button>
-
                         </Box>
-                    </Box>
-                </Grid>
-            </Grid>
+                    </div>
+                </div>
+            </div>
 
-            <Snackbar
-
-                open={open}
-                autoHideDuration={4000}
-                message={message}
-            />
-
+            <Snackbar open={open} autoHideDuration={4000} message={message} />
         </ThemeProvider>
     );
 }

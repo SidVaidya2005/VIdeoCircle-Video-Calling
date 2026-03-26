@@ -451,18 +451,51 @@ export default function VideoMeetComponent() {
 
             {askForUsername === true ?
 
-                <div>
-
-
-                    <h2>Enter into Lobby </h2>
-                    <TextField id="outlined-basic" label="Username" value={username} onChange={e => setUsername(e.target.value)} variant="outlined" />
-                    <Button variant="contained" onClick={connect}>Connect</Button>
-
-
-                    <div>
-                        <video ref={localVideoref} autoPlay muted></video>
+                <div className={styles.lobbyContainer}>
+                    <h2>Enter into Lobby</h2>
+                    <div className={styles.lobbyCard}>
+                        <div className={styles.lobbyInputRow}>
+                            <TextField
+                                id="outlined-basic"
+                                label="Your Name"
+                                value={username}
+                                onChange={e => setUsername(e.target.value)}
+                                variant="outlined"
+                                size="small"
+                                sx={{
+                                    flex: 1,
+                                    '& .MuiOutlinedInput-root': {
+                                        background: 'rgba(255,255,255,0.04)',
+                                        color: '#DDE6F0',
+                                        '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' },
+                                        '&:hover fieldset': { borderColor: 'rgba(0,200,255,0.35)' },
+                                        '&.Mui-focused fieldset': { borderColor: '#00C8FF' },
+                                    },
+                                    '& .MuiInputLabel-root': { color: 'rgba(221,230,240,0.5)' },
+                                    '& .MuiInputLabel-root.Mui-focused': { color: '#00C8FF' },
+                                }}
+                            />
+                            <Button
+                                variant="contained"
+                                onClick={connect}
+                                sx={{
+                                    background: 'linear-gradient(135deg, #00C8FF, #0099CC)',
+                                    color: '#07080F',
+                                    fontWeight: 700,
+                                    textTransform: 'none',
+                                    borderRadius: '8px',
+                                    boxShadow: '0 4px 20px rgba(0,200,255,0.25)',
+                                    '&:hover': {
+                                        background: 'linear-gradient(135deg, #33D4FF, #00C8FF)',
+                                        boxShadow: '0 8px 32px rgba(0,200,255,0.4)',
+                                    }
+                                }}
+                            >
+                                Join
+                            </Button>
+                        </div>
+                        <video className={styles.lobbyVideo} ref={localVideoref} autoPlay muted></video>
                     </div>
-
                 </div> :
 
 
@@ -500,26 +533,30 @@ export default function VideoMeetComponent() {
 
 
                     <div className={styles.buttonContainers}>
-                        <IconButton onClick={handleVideo} style={{ color: "white" }}>
-                            {(video === true) ? <VideocamIcon /> : <VideocamOffIcon />}
-                        </IconButton>
-                        <IconButton onClick={handleEndCall} style={{ color: "red" }}>
-                            <CallEndIcon  />
-                        </IconButton>
-                        <IconButton onClick={handleAudio} style={{ color: "white" }}>
-                            {audio === true ? <MicIcon /> : <MicOffIcon />}
-                        </IconButton>
+                        <div className={styles.controlBar}>
+                            <IconButton onClick={handleVideo}>
+                                {(video === true) ? <VideocamIcon /> : <VideocamOffIcon />}
+                            </IconButton>
+                            <div className={styles.endCallBtn}>
+                                <IconButton onClick={handleEndCall}>
+                                    <CallEndIcon />
+                                </IconButton>
+                            </div>
+                            <IconButton onClick={handleAudio}>
+                                {audio === true ? <MicIcon /> : <MicOffIcon />}
+                            </IconButton>
 
-                        {screenAvailable === true ?
-                            <IconButton onClick={handleScreen} style={{ color: "white" }}>
-                                {screen === true ? <ScreenShareIcon /> : <StopScreenShareIcon />}
-                            </IconButton> : <></>}
+                            {screenAvailable === true ?
+                                <IconButton onClick={handleScreen}>
+                                    {screen === true ? <ScreenShareIcon /> : <StopScreenShareIcon />}
+                                </IconButton> : <></>}
 
-                        <Badge badgeContent={newMessages} max={999} color='orange'>
-                            <IconButton onClick={() => setModal(!showModal)} style={{ color: "white" }}>
-                                <ChatIcon />                        </IconButton>
-                        </Badge>
-
+                            <Badge badgeContent={newMessages} max={999} color='primary'>
+                                <IconButton onClick={() => setModal(!showModal)}>
+                                    <ChatIcon />
+                                </IconButton>
+                            </Badge>
+                        </div>
                     </div>
 
 

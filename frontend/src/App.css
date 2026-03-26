@@ -1,96 +1,617 @@
+/* ================================================================
+   LANDING PAGE
+   ================================================================ */
+
 .landingPageContainer {
+  position: relative;
   width: 100vw;
   height: 100vh;
-  background: url("/public/background.png");
-  background-repeat: no-repeat;
-  background-size: cover;
-  color: white;
+  overflow: hidden;
+  color: var(--text);
+  background: var(--bg);
+}
+
+/* Ambient background orbs */
+.landingOrb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(90px);
+}
+
+.landingOrb1 {
+  width: 700px;
+  height: 700px;
+  top: -300px;
+  right: -200px;
+  background: radial-gradient(circle, rgba(0, 200, 255, 0.09) 0%, transparent 65%);
+  animation: ambientFloat 14s ease-in-out infinite;
+}
+
+.landingOrb2 {
+  width: 550px;
+  height: 550px;
+  bottom: -200px;
+  left: -100px;
+  background: radial-gradient(circle, rgba(255, 157, 66, 0.07) 0%, transparent 65%);
+  animation: ambientFloat 18s ease-in-out infinite reverse;
+  animation-delay: -6s;
+}
+
+@keyframes ambientFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  30% { transform: translate(25px, -35px) scale(1.04); }
+  60% { transform: translate(-18px, 20px) scale(0.97); }
 }
 
 .landingPageContainer nav {
-  padding-inline: 1.2rem;
-  padding-block: 1.6rem;
+  position: relative;
+  z-index: 10;
+  padding: 1.2rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-
+  background: rgba(7, 8, 15, 0.55);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.landingPageContainer nav h2 {
-  font-size: 1.8rem;
-  font-weight: 500;
+.landingPageContainer nav .navHeader h2 {
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.landingPageContainer nav .navHeader h2 span {
+  color: var(--accent);
 }
 
 .landingPageContainer nav .navlist {
   display: flex;
-  gap: 1.6rem;
+  gap: 0.4rem;
+  align-items: center;
   cursor: pointer;
+}
 
+.landingPageContainer nav .navlist > p {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+  color: var(--text-sub);
+}
+
+.landingPageContainer nav .navlist > p:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.landingPageContainer nav .navlist div[role='button'] {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.23, 1, 0.32, 1);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+.landingPageContainer nav .navlist div[role='button']:hover {
+  background: rgba(0, 200, 255, 0.1);
+  border-color: rgba(0, 200, 255, 0.3);
+  box-shadow: 0 4px 24px rgba(0, 200, 255, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.landingPageContainer nav .navlist div[role='button'] p {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.5rem 1.1rem;
+  color: var(--text);
 }
 
 .landingMainContainer {
+  position: relative;
+  z-index: 5;
   display: flex;
   justify-content: space-between;
-  padding-inline: 3rem;
-  height: 80vh;
   align-items: center;
+  padding: 0 5rem;
+  height: calc(100vh - 65px);
 }
 
-.landingMainContainer>div:nth-child(1) {
-  font-size: 2.2rem;
+.landingMainContainer > div:first-child {
+  max-width: 540px;
 }
 
-.landingMainContainer>div:nth-child(1) div[role='button'] {
-  background: #D97500;
-  width: fit-content;
-  padding: 1rem;
-  border-radius: 20px;
-  margin-top: 1.9rem;
+.landingMainContainer > div:first-child h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 5vw, 4.2rem);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  margin-bottom: 1.1rem;
 }
 
-.landingMainContainer>div:nth-child(1) div[role='button'] a {
+.landingMainContainer > div:first-child h1 span {
+  color: var(--accent);
+}
+
+.landingMainContainer > div:first-child > p {
+  font-size: 1.15rem;
+  color: var(--text-sub);
+  margin-bottom: 2.5rem;
+  line-height: 1.65;
+  font-weight: 300;
+}
+
+.landingMainContainer > div:first-child div[role='button'] {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--cta) 0%, #FF6B35 100%);
+  border-radius: 12px;
+  padding: 0.9rem 2.2rem;
+  box-shadow: 0 4px 28px var(--cta-glow), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  cursor: pointer;
+}
+
+.landingMainContainer > div:first-child div[role='button']:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 50px rgba(255, 157, 66, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.landingMainContainer > div:first-child div[role='button']:active {
+  transform: translateY(0);
+}
+
+.landingMainContainer > div:first-child div[role='button'] a {
   text-decoration: none;
   color: white;
-  font-size: 1.7rem;
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
-.landingMainContainer>div:nth-child(2) img {
+.landingMainContainer > div:nth-child(2) img {
   height: 70vh;
   width: auto;
+  filter: drop-shadow(0 20px 80px rgba(0, 200, 255, 0.15));
+  animation: imgFloat 6s ease-in-out infinite;
 }
+
+@keyframes imgFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-14px); }
+}
+
+/* ================================================================
+   NAVBAR (Home/History)
+   ================================================================ */
 
 .navBar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-inline: 20px;
-  text-align: center;
-
+  padding: 0.9rem 2rem;
+  background: rgba(7, 8, 15, 0.7);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
+
+.navBar h2 {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.navBar .MuiIconButton-root {
+  color: rgba(221, 230, 240, 0.55) !important;
+  transition: all 0.2s ease !important;
+}
+
+.navBar .MuiIconButton-root:hover {
+  color: var(--text) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+.navBar .MuiButton-root {
+  color: rgba(221, 230, 240, 0.55) !important;
+  font-family: var(--font-body) !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+  border-radius: var(--radius-sm) !important;
+  font-size: 0.9rem !important;
+  transition: all 0.2s ease !important;
+  padding: 0.4rem 0.9rem !important;
+}
+
+.navBar .MuiButton-root:hover {
+  color: var(--text) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* ================================================================
+   HOME / MEET CONTAINER
+   ================================================================ */
+
 .meetContainer {
   display: flex;
-  padding-inline: 20px;
-  height: 80vh;
-  gap: 10vw;
+  align-items: center;
   justify-content: center;
+  padding: 3rem 2rem;
+  min-height: calc(100vh - 62px);
+  gap: 8vw;
 }
 
-
-
 .leftPanel {
-  height: 100%;
   display: flex;
   align-items: center;
+  flex: 1;
+  max-width: 480px;
+}
 
+.leftPanel > div {
+  width: 100%;
+}
+
+.leftPanel h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3vw, 2.3rem);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  color: var(--text);
+  margin-bottom: 2rem;
+}
+
+.meetInputGroup {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.meetInputGroup .MuiTextField-root .MuiOutlinedInput-root {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-radius: 10px !important;
+  color: var(--text) !important;
+  font-family: var(--font-mono) !important;
+  font-size: 0.95rem !important;
+  letter-spacing: 0.04em !important;
+}
+
+.meetInputGroup .MuiTextField-root .MuiOutlinedInput-notchedOutline {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.meetInputGroup .MuiTextField-root .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: rgba(0, 200, 255, 0.35) !important;
+}
+
+.meetInputGroup .MuiTextField-root .Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px rgba(0, 200, 255, 0.1) !important;
+}
+
+.meetInputGroup .MuiTextField-root .MuiInputLabel-root {
+  color: var(--text-sub) !important;
+  font-family: var(--font-body) !important;
+}
+
+.meetInputGroup .MuiTextField-root .MuiInputLabel-root.Mui-focused {
+  color: var(--accent) !important;
+}
+
+.meetInputGroup .MuiButton-contained {
+  background: linear-gradient(135deg, var(--accent) 0%, #0099CC 100%) !important;
+  color: #07080F !important;
+  font-weight: 700 !important;
+  font-family: var(--font-body) !important;
+  border-radius: 10px !important;
+  text-transform: none !important;
+  padding: 0 1.6rem !important;
+  font-size: 0.95rem !important;
+  box-shadow: 0 4px 24px rgba(0, 200, 255, 0.25) !important;
+  transition: all 0.25s cubic-bezier(0.23, 1, 0.32, 1) !important;
+  min-width: 80px !important;
+}
+
+.meetInputGroup .MuiButton-contained:hover {
+  box-shadow: 0 8px 40px rgba(0, 200, 255, 0.45) !important;
+  transform: translateY(-1px) !important;
 }
 
 .rightPanel {
   display: flex;
   align-items: center;
+  justify-content: center;
+  flex: 1;
+  max-width: 420px;
 }
 
-.rightPanel > img {
-  width: 30vw;
+.rightPanel img {
+  width: 100%;
+  max-width: 380px;
   height: auto;
   border-radius: 20px;
+  filter: drop-shadow(0 20px 60px rgba(0, 200, 255, 0.1));
+}
+
+/* ================================================================
+   AUTH PAGE
+   ================================================================ */
+
+.authPage {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.authBg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.authOrb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+}
+
+.authOrb1 {
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(0, 200, 255, 0.1) 0%, transparent 70%);
+  top: -250px;
+  left: -150px;
+  animation: orbFloat 12s ease-in-out infinite;
+}
+
+.authOrb2 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(255, 157, 66, 0.08) 0%, transparent 70%);
+  bottom: -200px;
+  right: -100px;
+  animation: orbFloat 16s ease-in-out infinite reverse;
+  animation-delay: -5s;
+}
+
+.authOrb3 {
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(130, 80, 255, 0.07) 0%, transparent 70%);
+  top: 45%;
+  left: 55%;
+  animation: orbFloat 10s ease-in-out infinite;
+  animation-delay: -3s;
+}
+
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -35px) scale(1.06); }
+  66% { transform: translate(-20px, 22px) scale(0.96); }
+}
+
+.authCard {
+  position: relative;
+  z-index: 10;
+  width: 440px;
+  max-width: 92vw;
+  padding: 2.8rem 2.5rem;
+  background: rgba(13, 16, 28, 0.6);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 22px;
+  box-shadow:
+    0 30px 100px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.03),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+.authCardInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.authTitle {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-top: 0.75rem;
+  letter-spacing: -0.025em;
+}
+
+.authSubtitle {
+  font-size: 0.9rem;
+  color: var(--text-sub);
+  margin-top: 0.3rem;
+  margin-bottom: 1.5rem;
+  font-weight: 300;
+}
+
+.authTabs {
+  display: flex;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+  padding: 4px;
+  gap: 4px;
+  margin-bottom: 0.75rem;
+  width: 100%;
+}
+
+.authTab {
+  flex: 1;
+  padding: 0.55rem 1rem;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--text-sub);
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.authTab.active {
+  background: rgba(0, 200, 255, 0.12);
+  color: var(--accent);
+  box-shadow: inset 0 1px 0 rgba(0, 200, 255, 0.15);
+}
+
+.authTab:not(.active):hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.authError {
+  color: #FF7070;
+  font-size: 0.83rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.8rem;
+  background: rgba(255, 112, 112, 0.08);
+  border: 1px solid rgba(255, 112, 112, 0.2);
+  border-radius: 8px;
+  width: 100%;
+}
+
+/* ================================================================
+   HISTORY PAGE
+   ================================================================ */
+
+.historyPage {
+  min-height: 100vh;
+  padding-bottom: 3rem;
+}
+
+.historyHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 2rem;
+  background: rgba(7, 8, 15, 0.7);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.historyHeader h1 {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.historyHeader .MuiIconButton-root {
+  color: rgba(221, 230, 240, 0.55) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 10px !important;
+  padding: 7px !important;
+  transition: all 0.2s ease !important;
+}
+
+.historyHeader .MuiIconButton-root:hover {
+  color: var(--text) !important;
+  background: rgba(255, 255, 255, 0.09) !important;
+  border-color: rgba(0, 200, 255, 0.25) !important;
+}
+
+.historyContent {
+  padding: 2rem;
+  max-width: 680px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.historyCardItem {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 13px;
+  padding: 1.2rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  cursor: default;
+}
+
+.historyCardItem:hover {
+  background: rgba(255, 255, 255, 0.055);
+  border-color: rgba(0, 200, 255, 0.18);
+  box-shadow: 0 4px 24px rgba(0, 200, 255, 0.07);
+  transform: translateX(4px);
+}
+
+.historyCardLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.historyCardCode {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text);
+  letter-spacing: 0.04em;
+}
+
+.historyCardDate {
+  font-size: 0.8rem;
+  color: var(--text-sub);
+  font-weight: 300;
+}
+
+.historyEmpty {
+  text-align: center;
+  padding: 5rem 2rem;
+  color: var(--text-sub);
+}
+
+.historyEmpty h3 {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.historyEmpty p {
+  font-size: 0.95rem;
+  font-weight: 300;
 }
