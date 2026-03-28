@@ -1,23 +1,30 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom"
+import { useEffect, useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../contexts/AuthContext";
 
-const withAuth = (WrappedComponent ) => {
+const withAuth = (WrappedComponent) => {
     const AuthComponent = (props) => {
         const router = useNavigate();
-
-        const isAuthenticated = () => {
-            if(localStorage.getItem("token")) {
-                return true;
-            } 
-            return false;
-        }
+        const { verifyToken } = useContext(AuthContext);
+        const [checking, setChecking] = useState(true);
 
         useEffect(() => {
-            if(!isAuthenticated()) {
-                router("/auth")
+            const token = localStorage.getItem("token");
+            if (!token) {
+                router("/auth");
+                return;
             }
+            verifyToken().then((valid) => {
+                if (!valid) {
+                    localStorage.removeItem("token");
+                    router("/auth");
+                } else {
+                    setChecking(false);
+                }
+            });
         }, [])
 
+        if (checking) return null;
         return <WrappedComponent {...props} />
     }
 
