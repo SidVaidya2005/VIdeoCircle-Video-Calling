@@ -18,7 +18,6 @@ export default function ChatPanel({
 
                 <div className={styles.chattingDisplay}>
                     {messages.length !== 0 ? messages.map((item, index) => {
-                        console.log(messages);
                         return (
                             <div style={{ marginBottom: "20px" }} key={index}>
                                 <p style={{ fontWeight: "bold" }}>{item.sender}</p>

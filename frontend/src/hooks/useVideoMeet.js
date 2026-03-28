@@ -60,19 +60,15 @@ export default function useVideoMeet() {
             const videoPermission = await navigator.mediaDevices.getUserMedia({ video: true });
             if (videoPermission) {
                 setVideoAvailable(true);
-                console.log('Video permission granted');
             } else {
                 setVideoAvailable(false);
-                console.log('Video permission denied');
             }
 
             const audioPermission = await navigator.mediaDevices.getUserMedia({ audio: true });
             if (audioPermission) {
                 setAudioAvailable(true);
-                console.log('Audio permission granted');
             } else {
                 setAudioAvailable(false);
-                console.log('Audio permission denied');
             }
 
             if (navigator.mediaDevices.getDisplayMedia) {
@@ -98,7 +94,6 @@ export default function useVideoMeet() {
     useEffect(() => {
         if (video !== undefined && audio !== undefined) {
             getUserMedia();
-            console.log("SET STATE HAS ", video, audio);
         }
     }, [video, audio]);
 
@@ -122,7 +117,6 @@ export default function useVideoMeet() {
             connections[id].addStream(window.localStream);
 
             connections[id].createOffer().then((description) => {
-                console.log(description);
                 connections[id].setLocalDescription(description)
                     .then(() => {
                         socketRef.current.emit('signal', id, JSON.stringify({ 'sdp': connections[id].localDescription }));
@@ -173,7 +167,6 @@ export default function useVideoMeet() {
     };
 
     let getDislayMediaSuccess = (stream) => {
-        console.log("HERE");
         try {
             window.localStream.getTracks().forEach(track => track.stop());
         } catch (e) { console.log(e); }
@@ -260,13 +253,9 @@ export default function useVideoMeet() {
                     };
 
                     connections[socketListId].onaddstream = (event) => {
-                        console.log("BEFORE:", videoRef.current);
-                        console.log("FINDING ID: ", socketListId);
-
                         let videoExists = videoRef.current.find(video => video.socketId === socketListId);
 
                         if (videoExists) {
-                            console.log("FOUND EXISTING");
 
                             setVideos(videos => {
                                 const updatedVideos = videos.map(video =>
@@ -276,7 +265,6 @@ export default function useVideoMeet() {
                                 return updatedVideos;
                             });
                         } else {
-                            console.log("CREATING NEW");
                             let newVideo = {
                                 socketId: socketListId,
                                 stream: event.stream,
@@ -364,19 +352,6 @@ export default function useVideoMeet() {
         window.location.href = "/";
     };
 
-    let openChat = () => {
-        setModal(true);
-        setNewMessages(0);
-    };
-
-    let closeChat = () => {
-        setModal(false);
-    };
-
-    let handleMessage = (e) => {
-        setMessage(e.target.value);
-    };
-
     const addMessage = (data, sender, socketIdSender) => {
         setMessages((prevMessages) => [
             ...prevMessages,
@@ -388,7 +363,6 @@ export default function useVideoMeet() {
     };
 
     let sendMessage = () => {
-        console.log(socketRef.current);
         socketRef.current.emit('chat-message', message, username);
         setMessage("");
     };
@@ -401,7 +375,6 @@ export default function useVideoMeet() {
     return {
         localVideoref,
         lobbyCanvasRef,
-        videoRef,
         videoAvailable,
         audioAvailable,
         video,
@@ -424,9 +397,6 @@ export default function useVideoMeet() {
         handleAudio,
         handleScreen,
         handleEndCall,
-        openChat,
-        closeChat,
-        handleMessage,
         sendMessage,
         connect,
         navigate,
