@@ -1,10 +1,11 @@
-import React, { useRef, useEffect } from 'react'
+import React, { useRef } from 'react'
 import "../App.css"
 import { Link, useNavigate } from 'react-router-dom'
+import useASCIICanvas from '../hooks/useASCIICanvas'
 
 export default function LandingPage() {
     const router = useNavigate();
-    const canvasRef = useRef(null);
+    const canvasRef = useASCIICanvas();
     const previewRef = useRef(null);
 
     const handlePreviewMove = (e) => {
@@ -26,69 +27,12 @@ export default function LandingPage() {
         el.style.transform = `perspective(900px) rotateX(0deg) rotateY(0deg)`;
     };
 
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-
-        const CHARS = 'VIDEOCIRCL·=+-*·N·U·S·E·I·2·0·1·6·····=·+·-·*·V·I·D·E·O·C·';
-        const FONT_SIZE = 13;
-        const CHAR_W = FONT_SIZE * 0.62;
-
-        let cols, rows, grid;
-
-        const initGrid = () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            cols = Math.ceil(canvas.width / CHAR_W);
-            rows = Math.ceil(canvas.height / FONT_SIZE);
-            grid = Array.from({ length: rows * cols }, () =>
-                CHARS[Math.floor(Math.random() * CHARS.length)]
-            );
-        };
-
-        initGrid();
-
-        const draw = () => {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.font = `${FONT_SIZE}px 'JetBrains Mono', monospace`;
-            ctx.fillStyle = 'rgba(185, 138, 18, 0.42)';
-
-            // Update ~0.8% of cells per frame for slow drift
-            const updateCount = Math.max(1, Math.floor(grid.length * 0.008));
-            for (let i = 0; i < updateCount; i++) {
-                const idx = Math.floor(Math.random() * grid.length);
-                grid[idx] = CHARS[Math.floor(Math.random() * CHARS.length)];
-            }
-
-            for (let i = 0; i < grid.length; i++) {
-                const r = Math.floor(i / cols);
-                const c = i % cols;
-                ctx.fillText(grid[i], c * CHAR_W, (r + 1) * FONT_SIZE);
-            }
-        };
-
-        let interval = setInterval(draw, 80);
-        draw();
-
-        const handleResize = () => {
-            initGrid();
-            draw();
-        };
-        window.addEventListener('resize', handleResize);
-
-        return () => {
-            clearInterval(interval);
-            window.removeEventListener('resize', handleResize);
-        };
-    }, []);
-
     return (
         <div className="landingPageContainer">
-            <canvas ref={canvasRef} className="asciiCanvas" />
-            <div className="landingOverlay" />
+            <canvas ref={canvasRef} className="pageCanvas" />
+            <div className="pageOverlay" />
 
-            <div className="landingContent">
+            <div className="pageContent landingContent">
                 {/* ── Top bar ── */}
                 <header className="landingTopBar">
                     <span className="bracketLabel">[V_C_26]</span>
