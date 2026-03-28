@@ -34,6 +34,10 @@ const login = async (req, res) => {
         return res.status(400).json({ message: "Please Provide" });
     }
 
+    if (typeof username !== "string" || typeof password !== "string") {
+        return res.status(400).json({ message: "Invalid credentials format" });
+    }
+
     try {
         const user = await User.findOne({ username });
         if (!user) {
