@@ -56,6 +56,24 @@ export default function VideoMeetComponent() {
                 />
                 :
                 <div className={styles.meetVideoContainer}>
+                    <div className={styles.meetMainArea}>
+                        <ConferenceGrid videos={videos} />
+                        <video className={styles.meetUserVideo} ref={localVideoref} autoPlay muted></video>
+                        <MeetControls
+                            video={video}
+                            audio={audio}
+                            screen={screen}
+                            screenAvailable={screenAvailable}
+                            showModal={showModal}
+                            newMessages={newMessages}
+                            handleVideo={handleVideo}
+                            handleAudio={handleAudio}
+                            handleScreen={handleScreen}
+                            handleEndCall={handleEndCall}
+                            setModal={setModal}
+                        />
+                    </div>
+
                     <ChatPanel
                         showModal={showModal}
                         messages={messages}
@@ -63,24 +81,6 @@ export default function VideoMeetComponent() {
                         setMessage={setMessage}
                         sendMessage={sendMessage}
                     />
-
-                    <MeetControls
-                        video={video}
-                        audio={audio}
-                        screen={screen}
-                        screenAvailable={screenAvailable}
-                        showModal={showModal}
-                        newMessages={newMessages}
-                        handleVideo={handleVideo}
-                        handleAudio={handleAudio}
-                        handleScreen={handleScreen}
-                        handleEndCall={handleEndCall}
-                        setModal={setModal}
-                    />
-
-                    <video className={styles.meetUserVideo} ref={localVideoref} autoPlay muted></video>
-
-                    <ConferenceGrid videos={videos} />
                 </div>
             }
         </div>

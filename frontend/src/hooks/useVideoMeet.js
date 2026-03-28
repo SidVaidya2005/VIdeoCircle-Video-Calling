@@ -25,7 +25,7 @@ export default function useVideoMeet() {
     let [videoAvailable, setVideoAvailable] = useState(true);
     let [audioAvailable, setAudioAvailable] = useState(true);
     let [video, setVideo] = useState(false);
-    let [audio, setAudio] = useState();
+    let [audio, setAudio] = useState(false);
     let [screen, setScreen] = useState();
     let [showModal, setModal] = useState(true);
     let [screenAvailable, setScreenAvailable] = useState();

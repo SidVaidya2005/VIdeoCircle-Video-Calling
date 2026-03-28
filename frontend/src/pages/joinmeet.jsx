@@ -83,10 +83,7 @@ export default function GuestHome() {
 
                     {/* Bottom bar */}
                     <footer className="landingBottomBar">
-                        <div className="startCta">
-                            <span className="yearLabel">[2026]</span>
-                            <span className="bracketLabel">[GUEST MODE]</span>
-                        </div>
+                        <span className="yearLabel">[2026]</span>
                     </footer>
                 </div>
             </div>

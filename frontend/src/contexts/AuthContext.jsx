@@ -11,26 +11,20 @@ const client = axios.create({
     baseURL: `${server}/api/v1/users`
 })
 
+function authHeader() {
+    const token = localStorage.getItem("token");
+    return token ? { Authorization: `Bearer ${token}` } : {};
+}
 
 export const AuthProvider = ({ children }) => {
 
     const authContext = useContext(AuthContext);
-
-
     const [userData, setUserData] = useState(authContext);
-
-
     const router = useNavigate();
 
     const handleRegister = async (name, username, password) => {
         try {
-            let request = await client.post("/register", {
-                name: name,
-                username: username,
-                password: password
-            })
-
-
+            let request = await client.post("/register", { name, username, password });
             if (request.status === httpStatus.CREATED) {
                 return request.data.message;
             }
@@ -41,49 +35,58 @@ export const AuthProvider = ({ children }) => {
 
     const handleLogin = async (username, password) => {
         try {
-            let request = await client.post("/login", {
-                username: username,
-                password: password
-            });
-
+            let request = await client.post("/login", { username, password });
             if (request.status === httpStatus.OK) {
                 localStorage.setItem("token", request.data.token);
-                router("/home")
+                router("/guest");
             }
         } catch (err) {
             throw err;
         }
     }
 
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        router("/auth");
+    }
+
+    const verifyToken = async () => {
+        try {
+            await client.get("/verify", { headers: authHeader() });
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
     const getHistoryOfUser = async () => {
         try {
             let request = await client.get("/get_all_activity", {
-                params: {
-                    token: localStorage.getItem("token")
-                }
+                headers: authHeader()
             });
-            return request.data
-        } catch
-         (err) {
+            return request.data;
+        } catch (err) {
             throw err;
         }
     }
 
     const addToUserHistory = async (meetingCode) => {
         try {
-            let request = await client.post("/add_to_activity", {
-                token: localStorage.getItem("token"),
-                meeting_code: meetingCode
-            });
-            return request
+            let request = await client.post("/add_to_activity",
+                { meeting_code: meetingCode },
+                { headers: authHeader() }
+            );
+            return request;
         } catch (e) {
             throw e;
         }
     }
 
-
     const data = {
-        userData, setUserData, addToUserHistory, getHistoryOfUser, handleRegister, handleLogin
+        userData, setUserData,
+        handleRegister, handleLogin, handleLogout,
+        verifyToken,
+        getHistoryOfUser, addToUserHistory
     }
 
     return (
@@ -91,5 +94,4 @@ export const AuthProvider = ({ children }) => {
             {children}
         </AuthContext.Provider>
     )
-
 }
