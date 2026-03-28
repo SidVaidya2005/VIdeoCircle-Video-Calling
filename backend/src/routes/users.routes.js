@@ -6,6 +6,13 @@ import { addToHistory, getUserHistory, login, register, verifyToken } from "../c
 
 const router = Router();
 
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // limit each IP to 100 login requests per windowMs
+    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+});
+
 const registerLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 100, // limit each IP to 100 registration requests per windowMs
@@ -20,7 +27,7 @@ const historyLimiter = rateLimit({
     legacyHeaders: false,
 });
 
-router.route("/login").post(login)
+router.route("/login").post(loginLimiter, login)
 router.route("/register").post(registerLimiter, register)
 router.route("/verify").get(verifyToken)
 router.route("/add_to_activity").post(addToHistory)
