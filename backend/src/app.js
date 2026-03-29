@@ -27,7 +27,10 @@ const start = async () => {
   if (!mongoUrl) {
     throw new Error("MONGO_URL is not set in .env");
   }
-  const connectionDb = await mongoose.connect(mongoUrl);
+  const connectionDb = await mongoose.connect(mongoUrl, {
+    tls: true,
+    tlsAllowInvalidCertificates: false,
+  });
 
   console.log(`MONGO Connected DB HOst: ${connectionDb.connection.host}`);
   server.listen(app.get("port"), () => {
