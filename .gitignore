@@ -2,5 +2,6 @@
 .DS_Store
 .AppleDouble
 .LSOverride
-.CLAUDE.md
+CLAUDE.md
 .vercel
+vercel.json
