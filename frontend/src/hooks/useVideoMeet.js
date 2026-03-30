@@ -42,7 +42,7 @@ export default function useVideoMeet() {
 
     useEffect(() => {
         getPermissions();
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     let getDislayMedia = () => {
         if (screen) {
@@ -95,7 +95,7 @@ export default function useVideoMeet() {
         if (video !== undefined && audio !== undefined) {
             getUserMedia();
         }
-    }, [video, audio]);
+    }, [video, audio]); // eslint-disable-line react-hooks/exhaustive-deps
 
     let getMedia = () => {
         setVideo(videoAvailable);
@@ -338,7 +338,7 @@ export default function useVideoMeet() {
         if (screen !== undefined) {
             getDislayMedia();
         }
-    }, [screen]);
+    }, [screen]); // eslint-disable-line react-hooks/exhaustive-deps
 
     let handleScreen = () => {
         setScreen(!screen);

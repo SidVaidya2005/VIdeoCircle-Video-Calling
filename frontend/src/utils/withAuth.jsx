@@ -22,7 +22,7 @@ const withAuth = (WrappedComponent) => {
                     setChecking(false);
                 }
             });
-        }, [])
+        }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
         if (checking) return null;
         return <WrappedComponent {...props} />
