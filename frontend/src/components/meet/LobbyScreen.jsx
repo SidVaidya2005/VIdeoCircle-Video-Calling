@@ -14,6 +14,8 @@ export default function LobbyScreen({
     audioAvailable,
     setVideo,
     setAudio,
+    videoPending,
+    audioPending,
     connect,
     navigate,
 }) {
@@ -93,17 +95,19 @@ export default function LobbyScreen({
                         <div className={styles.lobbyMediaControls}>
                             <button
                                 type="button"
-                                className={`${styles.lobbyMediaBtn} ${!videoAvailable || video === false ? styles.lobbyMediaBtnOff : styles.lobbyMediaBtnOn}`}
+                                disabled={videoPending || !videoAvailable}
+                                className={`${styles.lobbyMediaBtn} ${videoPending || !videoAvailable || video === false ? styles.lobbyMediaBtnOff : styles.lobbyMediaBtnOn}`}
                                 onClick={() => setVideo(v => v === false ? videoAvailable : false)}
                             >
-                                [camera]
+                                {videoPending ? '[connecting...]' : '[camera]'}
                             </button>
                             <button
                                 type="button"
-                                className={`${styles.lobbyMediaBtn} ${!audioAvailable || audio === false ? styles.lobbyMediaBtnOff : styles.lobbyMediaBtnOn}`}
+                                disabled={audioPending || !audioAvailable}
+                                className={`${styles.lobbyMediaBtn} ${audioPending || !audioAvailable || audio === false ? styles.lobbyMediaBtnOff : styles.lobbyMediaBtnOn}`}
                                 onClick={() => setAudio(a => a === false ? audioAvailable : false)}
                             >
-                                [mic]
+                                {audioPending ? '[connecting...]' : '[mic]'}
                             </button>
                         </div>
                     </div>

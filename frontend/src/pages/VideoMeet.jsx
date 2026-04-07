@@ -16,6 +16,8 @@ export default function VideoMeetComponent() {
         setVideo,
         audio,
         setAudio,
+        videoPending,
+        audioPending,
         screen,
         showModal,
         setModal,
@@ -51,6 +53,8 @@ export default function VideoMeetComponent() {
                     audioAvailable={audioAvailable}
                     setVideo={setVideo}
                     setAudio={setAudio}
+                    videoPending={videoPending}
+                    audioPending={audioPending}
                     connect={connect}
                     navigate={navigate}
                 />

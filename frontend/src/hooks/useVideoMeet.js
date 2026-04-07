@@ -26,6 +26,8 @@ export default function useVideoMeet() {
     let [audioAvailable, setAudioAvailable] = useState(true);
     let [video, setVideo] = useState(false);
     let [audio, setAudio] = useState(false);
+    let [videoPending, setVideoPending] = useState(false);
+    let [audioPending, setAudioPending] = useState(false);
     let [screen, setScreen] = useState();
     let [showModal, setModal] = useState(true);
     let [screenAvailable, setScreenAvailable] = useState();
@@ -37,6 +39,7 @@ export default function useVideoMeet() {
 
     const videoRef = useRef([]);
     const lobbyCanvasRef = useASCIICanvas();
+    const isInitialMount = useRef(true);
 
     let [videos, setVideos] = useState([]);
 
@@ -105,44 +108,47 @@ export default function useVideoMeet() {
     };
 
     const getPermissions = async () => {
+        let gotVideo = false;
+        let gotAudio = false;
+
         try {
-            const videoPermission = await navigator.mediaDevices.getUserMedia({ video: true });
-            if (videoPermission) {
-                setVideoAvailable(true);
-                videoPermission.getTracks().forEach(track => track.stop());
-            } else {
-                setVideoAvailable(false);
-            }
+            const vp = await navigator.mediaDevices.getUserMedia({ video: true });
+            gotVideo = true;
+            setVideoAvailable(true);
+            vp.getTracks().forEach(track => track.stop());
+        } catch {
+            setVideoAvailable(false);
+        }
 
-            const audioPermission = await navigator.mediaDevices.getUserMedia({ audio: true });
-            if (audioPermission) {
-                setAudioAvailable(true);
-                audioPermission.getTracks().forEach(track => track.stop());
-            } else {
-                setAudioAvailable(false);
-            }
+        try {
+            const ap = await navigator.mediaDevices.getUserMedia({ audio: true });
+            gotAudio = true;
+            setAudioAvailable(true);
+            ap.getTracks().forEach(track => track.stop());
+        } catch {
+            setAudioAvailable(false);
+        }
 
-            if (navigator.mediaDevices.getDisplayMedia) {
-                setScreenAvailable(true);
-            } else {
-                setScreenAvailable(false);
-            }
+        setScreenAvailable(!!navigator.mediaDevices.getDisplayMedia);
 
-            if (videoAvailable || audioAvailable) {
-                const userMediaStream = await navigator.mediaDevices.getUserMedia({ video: videoAvailable, audio: audioAvailable });
-                if (userMediaStream) {
-                    window.localStream = userMediaStream;
-                    if (localVideoref.current) {
-                        localVideoref.current.srcObject = userMediaStream;
-                    }
+        if (gotVideo || gotAudio) {
+            try {
+                const userMediaStream = await navigator.mediaDevices.getUserMedia({ video: gotVideo, audio: gotAudio });
+                window.localStream = userMediaStream;
+                if (localVideoref.current) {
+                    localVideoref.current.srcObject = userMediaStream;
                 }
+            } catch (error) {
+                console.log(error);
             }
-        } catch (error) {
-            console.log(error);
         }
     };
 
     useEffect(() => {
+        if (isInitialMount.current) {
+            isInitialMount.current = false;
+            return;
+        }
         if (video !== undefined && audio !== undefined) {
             getUserMedia();
         }
@@ -183,11 +189,37 @@ export default function useVideoMeet() {
     };
 
     let getUserMedia = () => {
-        if ((video && videoAvailable) || (audio && audioAvailable)) {
-            navigator.mediaDevices.getUserMedia({ video: video, audio: audio })
-                .then(getUserMediaSuccess)
-                .then((stream) => { })
-                .catch((e) => console.log(e));
+        const wantVideo = video && videoAvailable;
+        const wantAudio = audio && audioAvailable;
+
+        if (wantVideo || wantAudio) {
+            // Reuse the existing live stream if it already has all required tracks
+            if (window.localStream) {
+                const vLive = window.localStream.getVideoTracks().some(t => t.readyState === 'live');
+                const aLive = window.localStream.getAudioTracks().some(t => t.readyState === 'live');
+                if ((!wantVideo || vLive) && (!wantAudio || aLive)) {
+                    window.localStream.getVideoTracks().forEach(t => { t.enabled = wantVideo; });
+                    window.localStream.getAudioTracks().forEach(t => { t.enabled = wantAudio; });
+                    if (localVideoref.current) localVideoref.current.srcObject = window.localStream;
+                    return;
+                }
+            }
+
+            setVideoPending(wantVideo);
+            setAudioPending(wantAudio);
+            navigator.mediaDevices.getUserMedia({ video: wantVideo, audio: wantAudio })
+                .then(stream => {
+                    setVideoPending(false);
+                    setAudioPending(false);
+                    getUserMediaSuccess(stream);
+                })
+                .catch(e => {
+                    console.log(e);
+                    setVideoPending(false);
+                    setAudioPending(false);
+                    if (wantVideo) setVideo(false);
+                    if (wantAudio) setAudio(false);
+                });
         } else {
             try {
                 let tracks = localVideoref.current.srcObject.getTracks();
@@ -417,6 +449,8 @@ export default function useVideoMeet() {
         setVideo,
         audio,
         setAudio,
+        videoPending,
+        audioPending,
         screen,
         showModal,
         setModal,
