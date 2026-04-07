@@ -1,3 +1,8 @@
+/* iOS Safari input zoom prevention — font-size must be >= 16px */
+input, textarea, select {
+  font-size: max(16px, 1em);
+}
+
 /* ================================================================
    SHARED PAGE LAYOUT
    All full-page routes share these three building blocks.
@@ -96,12 +101,14 @@
   position: relative;
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   background: #080808;
 }
 
 .landingContent {
   height: 100vh;
+  height: 100dvh;
 }
 
 /* ── Hero ── */
@@ -746,4 +753,73 @@
   height: auto;
   border-radius: 20px;
   filter: drop-shadow(0 20px 60px rgba(0, 200, 255, 0.1));
+}
+
+/* ================================================================
+   MOBILE RESPONSIVE — LANDING & SHARED NAV
+   ================================================================ */
+
+@media (max-width: 768px) {
+  /* ── Container: unlock scroll so stacked hero isn't clipped ── */
+  .landingPageContainer {
+    height: auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-y: auto;
+  }
+
+  .landingContent {
+    height: auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  /* ── Top bar: tighten padding, allow nav links to wrap ── */
+  .landingTopBar {
+    padding: 0.85rem 1.25rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .landingTopRight {
+    gap: 0.5rem;
+  }
+
+  .authTopLeft {
+    gap: 0.5rem;
+  }
+
+  /* ── Hero: stack left/preview vertically, center content ── */
+  .landingHero {
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 1rem 1.25rem 0;
+    gap: 0.5rem;
+  }
+
+  .heroLeft {
+    align-items: center;
+    text-align: center;
+  }
+
+  /* Tighter clamp so the headline doesn't bleed off narrow screens */
+  .heroLine {
+    font-size: clamp(3.8rem, 21vw, 5.5rem);
+    line-height: 0.9;
+  }
+
+  .heroPreview {
+    max-width: 100%;
+    width: 100%;
+    align-items: center;
+  }
+
+  /* ── Bottom bar: stack CTA and badge vertically ── */
+  .landingBottomBar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem 1.25rem 1.5rem;
+  }
 }
