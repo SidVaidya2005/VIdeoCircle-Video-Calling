@@ -17,6 +17,7 @@ $RECYCLE.BIN/
 
 # Claude Code
 CLAUDE.md
+.claude/
 
 # Vercel
 .vercel
