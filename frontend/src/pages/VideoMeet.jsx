@@ -1,6 +1,8 @@
 import React from 'react';
 import styles from '../styles/videoComponent.module.css';
 import useVideoMeet from '../hooks/useVideoMeet';
+import VideocamOffIcon from '@mui/icons-material/VideocamOff';
+import MicOffIcon from '@mui/icons-material/MicOff';
 import LobbyScreen from '../components/meet/LobbyScreen';
 import MeetControls from '../components/meet/MeetControls';
 import ChatPanel from '../components/meet/ChatPanel';
@@ -62,7 +64,19 @@ export default function VideoMeetComponent() {
                 <div className={styles.meetVideoContainer}>
                     <div className={styles.meetMainArea}>
                         <ConferenceGrid videos={videos} />
-                        <video className={styles.meetUserVideo} ref={localVideoref} autoPlay muted></video>
+                        <div className={styles.meetUserVideoWrapper}>
+                            <video className={styles.meetUserVideo} ref={localVideoref} autoPlay muted></video>
+                            {!video && (
+                                <div className={styles.videoOffOverlay}>
+                                    <VideocamOffIcon />
+                                </div>
+                            )}
+                            {!audio && (
+                                <div className={styles.micOffBadge}>
+                                    <MicOffIcon />
+                                </div>
+                            )}
+                        </div>
                         <MeetControls
                             video={video}
                             audio={audio}
