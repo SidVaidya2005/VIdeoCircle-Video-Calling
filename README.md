@@ -3,7 +3,7 @@
 
   <h1>VideoCircle</h1>
 
-  <p>A full-stack real-time video conferencing web application built with WebRTC, Socket.IO, and React.</p>
+  <p>A full-stack real-time video conferencing web application built with LiveKit SFU, Express, and React.</p>
 
   <p>
     <a href="https://zoom-clone-teal-gamma.vercel.app" target="_blank">
@@ -14,9 +14,8 @@
   <p>
     <img src="https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=white" />
     <img src="https://img.shields.io/badge/Express-5-000000?style=flat-square&logo=express&logoColor=white" />
-    <img src="https://img.shields.io/badge/Socket.IO-4-010101?style=flat-square&logo=socket.io&logoColor=white" />
+    <img src="https://img.shields.io/badge/LiveKit-SFU-E5484D?style=flat-square&logo=webrtc&logoColor=white" />
     <img src="https://img.shields.io/badge/MongoDB-Atlas-47A248?style=flat-square&logo=mongodb&logoColor=white" />
-    <img src="https://img.shields.io/badge/WebRTC-Peer--to--Peer-333?style=flat-square&logo=webrtc&logoColor=white" />
     <img src="https://img.shields.io/badge/Deployed-Vercel-000?style=flat-square&logo=vercel&logoColor=white" />
   </p>
 </div>
@@ -25,13 +24,13 @@
 
 ## Overview
 
-VideoCircle is a full-stack video conferencing application that lets users host and join real-time video calls directly in the browser — no plugins or downloads required. It supports multi-participant calls with live camera/mic toggling, screen sharing, in-call chat, and a meeting history dashboard.
+VideoCircle is a full-stack video conferencing application that lets users host and join real-time video calls directly in the browser — no plugins or downloads required. It uses **LiveKit** as the SFU (Selective Forwarding Unit) for media, supporting multi-participant calls with live camera/mic toggling, screen sharing, in-call chat, and a meeting history dashboard.
 
 **Key Features:**
 
-- **Multi-participant video calls** — peer-to-peer WebRTC connections via STUN server negotiation
+- **Multi-participant video calls** — powered by LiveKit SFU with adaptive bitrate and simulcast
 - **Lobby screen** — preview your camera and toggle audio/video before joining a call
-- **In-call chat** — real-time messages broadcast to all participants in the room
+- **In-call chat** — real-time data channel messages via LiveKit
 - **Screen sharing** — share your screen with all call participants
 - **Guest access** — join any meeting without registering
 - **Meeting history** — authenticated users can view a log of all past sessions
@@ -65,42 +64,39 @@ VideoCircle is a full-stack video conferencing application that lets users host 
 | Layer | Technology |
 |---|---|
 | **Frontend** | React 18, React Router v6, Material-UI v5 |
-| **Real-time** | Socket.IO v4 (client + server) |
-| **Video/Audio** | WebRTC (`getUserMedia`, `RTCPeerConnection`, `getDisplayMedia`) |
+| **Video/Audio** | LiveKit Cloud (SFU), `@livekit/components-react`, `livekit-client` |
 | **HTTP Client** | Axios |
-| **Backend** | Node.js, Express 5 |
+| **Backend** | Node.js, Express 5, `livekit-server-sdk` |
 | **Database** | MongoDB Atlas (Mongoose ODM) |
 | **Authentication** | Custom token (crypto hex), bcrypt (10 rounds) |
 | **Process Manager** | PM2 (production), Nodemon (development) |
 | **Frontend Hosting** | Vercel |
-| **Backend Hosting** | Render |
+| **Backend Hosting** | Railway (serverless-compatible) |
 
 ---
 
 ## Architecture & Data Flow
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                         Browser                             │
-│                                                             │
-│  React App (Vercel)                                         │
-│  ┌─────────────┐   REST (Axios)   ┌──────────────────────┐ │
-│  │ Auth Pages  │ ──────────────── │                      │ │
-│  │ Home / Hist │                  │  Express Backend      │ │
-│  └─────────────┘                  │  (Render)            │ │
-│                                   │                      │ │
-│  ┌─────────────┐  Socket.IO WS    │  Socket.IO Server    │ │
-│  │ VideoMeet   │ ─────────────── │                      │ │
-│  │ Component   │                  └────────┬─────────────┘ │
-│  └──────┬──────┘                           │               │
-│         │  WebRTC (direct P2P)             │ Mongoose      │
-│         └──────────────────────┐           ▼               │
-│                                │    MongoDB Atlas          │
-│  ┌─────────────┐               │    ┌──────────────────┐  │
-│  │  Peer Browser│◄─────────────┘    │ users collection  │  │
-│  └─────────────┘   ICE/SDP via      │ meetings collection│  │
-│                    Socket relay     └──────────────────┘  │
-└─────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────┐
+│  React App (Vercel)                                              │
+│                                                                  │
+│  ┌──────────────────┐   REST (Axios)    ┌─────────────────────┐ │
+│  │  Auth / Home /   │ ────────────────► │  Express Backend    │ │
+│  │  History Pages   │ ◄──────────────── │  (Railway)          │ │
+│  └──────────────────┘  token, history   │                     │ │
+│                                         │  MongoDB Atlas      │ │
+│  ┌──────────────────┐  GET /get-token   │  ┌───────────────┐  │ │
+│  │  VideoMeet.jsx   │ ────────────────► │  │ users         │  │ │
+│  │  <LiveKitRoom>   │ ◄──── JWT ─────── │  │ meetings      │  │ │
+│  └────────┬─────────┘                   └─────────────────────┘ │
+│           │  WebRTC + WebSocket (LiveKit SDK)                    │
+│           ▼                                                      │
+│  ┌──────────────────────────────┐                               │
+│  │    LiveKit Cloud (SFU)       │                               │
+│  │  Video · Audio · Chat data   │                               │
+│  └──────────────────────────────┘                               │
+└──────────────────────────────────────────────────────────────────┘
 ```
 
 ### Authentication Flow
@@ -114,12 +110,11 @@ VideoCircle is a full-stack video conferencing application that lets users host 
 
 1. User navigates to `/home` → enters a meeting code → navigated to `/:meetingCode`
 2. **Lobby screen** — camera/mic preview, name entry, toggle controls
-3. `[JOIN]` clicked → `getUserMedia` streams camera/mic → Socket.IO connects to server
-4. Server receives `join-call` → broadcasts `user-joined` to all sockets in the room
-5. Peers exchange **SDP offer/answer** and **ICE candidates** via `signal` relay events
-6. Direct WebRTC `RTCPeerConnection` established between peers (STUN: `stun.l.google.com:19302`)
-7. Chat messages broadcast via `chat-message` Socket.IO event
-8. On disconnect, server emits `user-left` → peers remove the video stream from the grid
+3. `[JOIN]` clicked → frontend fetches a LiveKit JWT from `GET /api/v1/meet/get-token`
+4. `<LiveKitRoom>` connects directly to LiveKit Cloud using the JWT (no backend involvement in media)
+5. LiveKit SFU handles track subscription, simulcast, and adaptive bitrate automatically
+6. Chat messages are sent over LiveKit's data channel via `useChat()`
+7. On disconnect, LiveKit SDK cleans up tracks; `onDisconnected` navigates home
 
 ---
 
@@ -145,8 +140,7 @@ Zoom-Clone/
 │       ├── contexts/
 │       │   └── AuthContext.jsx  # Axios client, auth + history functions
 │       ├── hooks/
-│       │   ├── useASCIICanvas.js        # Animated ASCII background
-│       │   └── useVideoMeet.js          # WebRTC + Socket.IO logic
+│       │   └── useASCIICanvas.js        # Animated ASCII background
 │       ├── pages/
 │       │   ├── landing.jsx      # Landing page (/)
 │       │   ├── authentication.jsx # Register/login (/auth)
@@ -159,17 +153,18 @@ Zoom-Clone/
 │       └── utils/
 │           └── withAuth.jsx     # Auth guard HOC
 │
-├── backend/                     # Node.js / Express server (Render)
+├── backend/                     # Node.js / Express server (Railway)
 │   └── src/
-│       ├── app.js               # Express + Socket.IO init, MongoDB connect
+│       ├── app.js               # Express init, MongoDB connect, route mount
 │       ├── controllers/
-│       │   ├── socketManager.js # WebRTC signaling logic
-│       │   └── user.controller.js # Auth + history handlers
+│       │   ├── user.controller.js   # Auth + history handlers
+│       │   └── meet.controller.js   # LiveKit JWT token generation
 │       ├── models/
-│       │   ├── user.model.js    # User schema (name, username, token)
-│       │   └── meeting.model.js # Meeting schema (user_id, code, date)
+│       │   ├── user.model.js        # User schema (name, username, token)
+│       │   └── meeting.model.js     # Meeting schema (user_id, code, date)
 │       └── routes/
-│           └── users.routes.js  # API route definitions + rate limiting
+│           ├── users.routes.js      # Auth + history routes + rate limiting
+│           └── meet.routes.js       # LiveKit token route
 │
 ├── vercel.json                  # Vercel frontend-only build config
 └── README.md
@@ -204,9 +199,13 @@ Create a `.env` file in the `backend/` directory:
 ```env
 MONGO_URL=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/<dbname>?retryWrites=true&w=majority
 PORT=8000
+LIVEKIT_API_KEY=<your-livekit-api-key>
+LIVEKIT_API_SECRET=<your-livekit-api-secret>
+LIVEKIT_URL=wss://<your-livekit-project>.livekit.cloud
 ```
 
 > **MongoDB Atlas**: Go to **Network Access** and add `0.0.0.0/0` (or your machine's IP) to allow connections.
+> **LiveKit**: Create a free project at [livekit.io](https://livekit.io) to get your API key, secret, and WebSocket URL.
 
 Start the backend:
 
@@ -223,13 +222,14 @@ cd ../frontend
 npm install
 ```
 
-Optionally create a `.env.local` file to point to your backend:
+Create a `.env` file in the `frontend/` directory:
 
 ```env
 REACT_APP_SERVER_URL=http://localhost:8000
+REACT_APP_LIVEKIT_URL=wss://<your-livekit-project>.livekit.cloud
 ```
 
-> If omitted, the frontend defaults to `http://localhost:8000`.
+> `REACT_APP_SERVER_URL` defaults to `http://localhost:8000` if omitted. `REACT_APP_LIVEKIT_URL` is required — the app will not connect to video calls without it.
 
 Start the frontend:
 
@@ -267,19 +267,25 @@ npm start          # Dev server on http://localhost:3000
 | Variable | Required | Description |
 |---|---|---|
 | `MONGO_URL` | Yes | MongoDB Atlas connection string |
+| `LIVEKIT_API_KEY` | Yes | LiveKit project API key |
+| `LIVEKIT_API_SECRET` | Yes | LiveKit project API secret |
+| `LIVEKIT_URL` | Yes | LiveKit server WebSocket URL (`wss://...`) |
 | `PORT` | No | Server port (default: `8000`) |
 
-### Frontend (`.env.local` or Vercel env)
+### Frontend (`frontend/.env` or Vercel env)
 
 | Variable | Required | Description |
 |---|---|---|
 | `REACT_APP_SERVER_URL` | No | Backend base URL (default: `http://localhost:8000`) |
+| `REACT_APP_LIVEKIT_URL` | Yes | LiveKit server WebSocket URL (`wss://...`) |
 
 ---
 
 ## API Endpoints
 
-All routes are prefixed with `/api/v1/users`. Rate limited to **100 requests per 15 minutes** per IP.
+All routes are rate limited to **100 requests per 15 minutes** per IP.
+
+**`/api/v1/users`** — Auth & history:
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
@@ -288,6 +294,12 @@ All routes are prefixed with `/api/v1/users`. Rate limited to **100 requests per
 | `GET` | `/verify` | Bearer token | Validate an existing session token |
 | `POST` | `/add_to_activity` | Bearer token | Log a meeting to history |
 | `GET` | `/get_all_activity` | Bearer token | Fetch all meetings for the current user |
+
+**`/api/v1/meet`** — LiveKit:
+
+| Method | Endpoint | Auth | Query params | Description |
+|---|---|---|---|---|
+| `GET` | `/get-token` | No | `room`, `username` | Issue a short-lived LiveKit JWT for joining a room |
 
 ### Request/Response Examples
 
@@ -334,13 +346,15 @@ The frontend is deployed as a static React build on Vercel. The `vercel.json` in
 }
 ```
 
-Set the `REACT_APP_SERVER_URL` environment variable in your Vercel project settings to point to your backend URL.
+Set the following environment variables in your Vercel project settings:
+- `REACT_APP_SERVER_URL` — your backend URL
+- `REACT_APP_LIVEKIT_URL` — your LiveKit server WebSocket URL (`wss://...`)
 
-### Backend (Render / any Node.js host)
+### Backend (Railway / any Node.js host)
 
-The backend requires a persistent server with WebSocket support — it **cannot** be deployed as serverless functions because Socket.IO requires long-lived connections.
+The backend is a standard Express REST API with no persistent WebSocket connections — it is fully **serverless-compatible** and can be deployed anywhere Node.js runs.
 
-Recommended hosts: **Render**, **Railway**, **Fly.io**, **DigitalOcean App Platform**.
+Recommended hosts: **Railway**, **Render**, **Fly.io**, **Vercel Functions**, **AWS Lambda**.
 
 ```bash
 # Production start command
@@ -379,5 +393,5 @@ This project is licensed under the **ISC License**.
 ---
 
 <div align="center">
-  <sub>Built with React, Express, WebRTC, and Socket.IO</sub>
+  <sub>Built with React, Express, and LiveKit</sub>
 </div>
