@@ -1,6 +1,7 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { LiveKitRoom, useLocalParticipant } from '@livekit/components-react';
+import { LiveKitRoom, useLocalParticipant, AudioConference, VideoTrack } from '@livekit/components-react';
+import { Track, VideoPresets } from 'livekit-client';
 import styles from '../styles/videoComponent.module.css';
 import VideocamOffIcon from '@mui/icons-material/VideocamOff';
 import MicOffIcon from '@mui/icons-material/MicOff';
@@ -14,19 +15,13 @@ import server from '../environment';
 // Must be rendered inside <LiveKitRoom> so useLocalParticipant is in context.
 function LocalVideoPIP() {
     const { isCameraEnabled, isMicrophoneEnabled, localParticipant } = useLocalParticipant();
-    const videoRef = useRef(null);
-    const cameraTrack = localParticipant?.cameraTrack?.track;
-
-    useEffect(() => {
-        if (!cameraTrack || !videoRef.current) return;
-        cameraTrack.attach(videoRef.current);
-        const el = videoRef.current;
-        return () => cameraTrack.detach(el);
-    }, [cameraTrack]);
 
     return (
         <div className={styles.meetUserVideoWrapper}>
-            <video className={styles.meetUserVideo} ref={videoRef} autoPlay muted />
+            <VideoTrack
+                trackRef={{ participant: localParticipant, source: Track.Source.Camera }}
+                className={styles.meetUserVideo}
+            />
             {!isCameraEnabled && (
                 <div className={styles.videoOffOverlay}>
                     <VideocamOffIcon />
@@ -60,6 +55,7 @@ function RoomView({ onEndCall }) {
 
     return (
         <div className={styles.meetVideoContainer}>
+            <AudioConference />
             <div className={styles.meetMainArea}>
                 <ConferenceGrid />
                 <LocalVideoPIP />
@@ -129,6 +125,8 @@ export default function VideoMeetComponent() {
             video={mediaPrefs.video}
             onDisconnected={() => navigate('/')}
             style={{ display: 'contents' }}
+            options={{ adaptiveStream: true, dynacast: true }}
+            videoCaptureDefaults={{ resolution: VideoPresets.h720.resolution }}
         >
             <RoomView onEndCall={() => navigate('/')} />
         </LiveKitRoom>

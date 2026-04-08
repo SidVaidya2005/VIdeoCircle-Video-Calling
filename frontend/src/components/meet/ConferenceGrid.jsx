@@ -1,5 +1,4 @@
-import { useRef, useEffect } from 'react';
-import { useTracks } from '@livekit/components-react';
+import { useTracks, VideoTrack } from '@livekit/components-react';
 import { Track } from 'livekit-client';
 import styles from '../../styles/videoComponent.module.css';
 import VideocamOffIcon from '@mui/icons-material/VideocamOff';
@@ -13,22 +12,12 @@ function getGridDimensions(count) {
 }
 
 function ConferenceCell({ trackRef }) {
-    const videoRef = useRef(null);
-    const track = trackRef.publication?.track;
-
-    useEffect(() => {
-        if (!track || !videoRef.current) return;
-        track.attach(videoRef.current);
-        const el = videoRef.current;
-        return () => track.detach(el);
-    }, [track]);
-
     const isVideoMuted = trackRef.publication?.isMuted ?? false;
     const isAudioMuted = !trackRef.participant?.isMicrophoneEnabled;
 
     return (
         <div className={styles.conferenceCell}>
-            <video ref={videoRef} autoPlay />
+            <VideoTrack trackRef={trackRef} />
             {isVideoMuted && (
                 <div className={styles.videoOffOverlay}>
                     <VideocamOffIcon />
