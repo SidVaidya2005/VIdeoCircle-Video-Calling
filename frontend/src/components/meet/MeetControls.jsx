@@ -1,4 +1,3 @@
-import React from 'react';
 import { Badge, IconButton } from '@mui/material';
 import VideocamIcon from '@mui/icons-material/Videocam';
 import VideocamOffIcon from '@mui/icons-material/VideocamOff';

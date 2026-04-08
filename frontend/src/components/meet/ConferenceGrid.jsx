@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import { useTracks } from '@livekit/components-react';
 import { Track } from 'livekit-client';
 import styles from '../../styles/videoComponent.module.css';
