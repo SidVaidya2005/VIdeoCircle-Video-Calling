@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { LiveKitRoom, useLocalParticipant, AudioConference, VideoTrack } from '@livekit/components-react';
+import { LiveKitRoom, useLocalParticipant, RoomAudioRenderer, VideoTrack } from '@livekit/components-react';
 import { Track, VideoPresets } from 'livekit-client';
 import styles from '../styles/videoComponent.module.css';
 import VideocamOffIcon from '@mui/icons-material/VideocamOff';
@@ -55,7 +55,7 @@ function RoomView({ onEndCall }) {
 
     return (
         <div className={styles.meetVideoContainer}>
-            <AudioConference />
+            <RoomAudioRenderer />
             <div className={styles.meetMainArea}>
                 <ConferenceGrid />
                 <LocalVideoPIP />
