@@ -15,10 +15,6 @@ $RECYCLE.BIN/
 # Linux
 *~
 
-# Claude Code
-CLAUDE.md
-.claude/
-
 # Vercel
 .vercel
 vercel.json
