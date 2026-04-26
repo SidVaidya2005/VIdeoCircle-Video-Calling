@@ -9,7 +9,7 @@ import LobbyScreen from '../components/meet/LobbyScreen';
 import MeetControls from '../components/meet/MeetControls';
 import ChatPanel from '../components/meet/ChatPanel';
 import ConferenceGrid from '../components/meet/ConferenceGrid';
-import server from '../environment';
+import { env } from '../shared/lib/env';
 
 // ── Local video picture-in-picture ──────────────────────────────────────────
 // Must be rendered inside <LiveKitRoom> so useLocalParticipant is in context.
@@ -90,7 +90,7 @@ export default function VideoMeetComponent() {
         setError('');
         try {
             const res = await fetch(
-                `${server}/api/v1/meet/get-token` +
+                `${env.serverUrl}/api/v1/meet/get-token` +
                 `?room=${encodeURIComponent(meetingCode)}` +
                 `&username=${encodeURIComponent(username)}`
             );
@@ -119,7 +119,7 @@ export default function VideoMeetComponent() {
     return (
         <LiveKitRoom
             token={token}
-            serverUrl={process.env.REACT_APP_LIVEKIT_URL}
+            serverUrl={env.livekitUrl}
             connect
             audio={mediaPrefs.audio}
             video={mediaPrefs.video}

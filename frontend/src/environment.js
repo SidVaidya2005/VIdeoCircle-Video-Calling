@@ -1,3 +1,3 @@
-const server = process.env.REACT_APP_SERVER_URL || "http://localhost:8000";
+import { env } from "./shared/lib/env";
 
-export default server;
+export default env.serverUrl;
