@@ -1,10 +1,6 @@
 {
   "compilerOptions": {
     "baseUrl": "src",
-    "jsx": "react",
-    "target": "es2020",
-    "module": "esnext",
-    "moduleResolution": "node",
     "checkJs": false
   },
   "include": ["src"]
