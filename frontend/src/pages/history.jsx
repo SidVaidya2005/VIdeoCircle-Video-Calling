@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { AuthContext } from '../contexts/AuthContext'
+import { AuthContext } from '../features/auth/context/AuthContext'
 import { useNavigate } from 'react-router-dom';
 import { Snackbar } from '@mui/material';
 import "../App.css";
 import useASCIICanvas from '../shared/hooks/useASCIICanvas';
-import withAuth from '../utils/withAuth';
+import withAuth from '../features/auth/components/withAuth';
 
 function History() {
     const { getHistoryOfUser } = useContext(AuthContext);
