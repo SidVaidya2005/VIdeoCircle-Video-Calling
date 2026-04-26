@@ -1,7 +1,7 @@
 import React, { useRef } from 'react'
 import "../App.css"
 import { Link, useNavigate } from 'react-router-dom'
-import useASCIICanvas from '../hooks/useASCIICanvas'
+import useASCIICanvas from '../shared/hooks/useASCIICanvas'
 
 export default function LandingPage() {
     const router = useNavigate();

@@ -4,8 +4,8 @@ import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import { ThemeProvider } from '@mui/material/styles';
 import '../App.css';
-import goldTheme from '../themes/goldTheme';
-import useASCIICanvas from '../hooks/useASCIICanvas';
+import goldTheme from '../shared/theme/goldTheme';
+import useASCIICanvas from '../shared/hooks/useASCIICanvas';
 
 export default function GuestHome() {
     const navigate = useNavigate();

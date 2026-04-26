@@ -4,61 +4,91 @@ This file provides guidance to Claude Code (claude.ai/code) when working with th
 
 ## Stack & conventions
 
-- **Express 5** with native ESM (`"type": "module"` in `package.json`). Use `import` syntax and include the `.js` extension on relative imports — Node ESM does not auto-resolve.
+- **Express 5** with native ESM (`"type": "module"`). Use `import` syntax and include the `.js` extension on relative imports — Node ESM does not auto-resolve.
 - No TypeScript, no linter, **no tests** in this package. Don't add a test runner without asking.
-- `src/app.js` is the entry point — boots Mongoose then `app.listen()`. Body limits are 40kb on JSON and urlencoded bodies; bumping these has security implications, ask first.
+- **Layered architecture**: `app.js` is boot only. Each domain lives in `modules/<name>/` as `routes → controller → service → model`. Cross-cutting concerns are in `middleware/`. Env reads are confined to `config/env.js`.
+
+## Layout
+
+```
+src/
+  app.js                       boot only — assemble app, mount routes, listen
+  config/
+    env.js                     reads + validates process.env (fails fast at boot)
+    db.js                      mongoose.connect with TLS
+  middleware/
+    auth.js                    requireAuth — validates Bearer token, attaches req.user
+    errorHandler.js            final catch-all + notFoundHandler
+    validate.js                validate(zodSchema) — parses {body, query, params} → req.validated
+    rateLimit.js               named limiters (loginLimiter, tokenLimiter, …)
+  modules/
+    users/
+      users.routes.js          limiter → validate → (requireAuth) → controller
+      users.controller.js      thin: req.validated → service → res
+      users.service.js         business logic (register/login/findUserByToken/history)
+      users.validation.js      Zod schemas
+      users.model.js           Mongoose User
+      meeting.model.js         Mongoose Meeting (history records)
+    meet/
+      meet.routes.js
+      meet.controller.js
+      meet.service.js          generateLiveKitToken
+      meet.validation.js
+  utils/
+    AppError.js                throwable error with HTTP status
+    tokens.js                  generateSessionToken, sessionExpiry, isExpired
+    logger.js                  console wrapper, swappable
+```
 
 ## Commands
 
 ```bash
-npm run dev      # nodemon src/app.js — hot reload during development
+npm run dev      # nodemon src/app.js — hot reload
 npm start        # node src/app.js
-npm run prod     # pm2 src/app.js (used in some deploy configs)
+npm run prod     # pm2 src/app.js
 ```
 
 There is no test/lint script.
 
 ## Required environment
 
-`src/app.js` and `src/controllers/meet.controller.js` will throw or 500 without these (set in `backend/.env`):
+Read once in `config/env.js`. The app **throws at boot** if any required var is missing (was previously a per-request 500). Set in `backend/.env`:
 
-- `MONGO_URL` — Mongoose connects with `tls: true`, no fallback URL.
-- `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET`, `LIVEKIT_URL` — all three are required for `/api/v1/meet/get-token`.
+- `MONGO_URL` — required.
+- `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET`, `LIVEKIT_URL` — all required.
 - `PORT` — optional, defaults to 8000.
 
-## Route surface
-
-Mounted in `src/app.js`:
-
-- `/api/v1/users` → `routes/users.routes.js` → `controllers/user.controller.js`
-- `/api/v1/meet`  → `routes/meet.routes.js`  → `controllers/meet.controller.js`
-
-All routes use `express-rate-limit` (100 req / 15 min per IP) **except** `POST /add_to_activity` and `GET /verify`, which currently have no limiter. If you add new auth-bearing routes, add a limiter alongside the existing ones.
+Never read `process.env.*` outside `config/env.js`. Import the typed `env` object instead.
 
 ## Auth model — non-obvious
 
-`controllers/user.controller.js` implements its own session-token scheme. Tokens are **not JWTs**:
+`modules/users/users.service.js` implements a session-token scheme. Tokens are **not JWTs**:
 
-- `crypto.randomBytes(20).toString("hex")` (40 chars), 7-day TTL stored on the `User` doc as `token` + `tokenExpiry`.
-- `extractToken(req)` reads `Authorization: Bearer <token>`.
-- `findValidUser(token)` is the authoritative validator — it also **lazily clears** expired token fields back to `undefined` and saves. Any new protected endpoint must go through `findValidUser`, not roll its own check.
-- Login overwrites the existing token, so a user is effectively logged in on one session at a time.
-- There is no logout endpoint that invalidates server-side; the frontend just deletes from `localStorage`.
+- `crypto.randomBytes(20).toString("hex")` (40 chars), 7-day TTL, stored on the `User` doc as `token` + `tokenExpiry`. Helpers live in `utils/tokens.js`.
+- `findUserByToken` is the authoritative validator — it lazily clears expired token fields. **Don't roll a parallel check elsewhere.**
+- `middleware/auth.js#requireAuth` is the only entry point for protected routes. It calls `findUserByToken` and attaches `req.user`. Never call the service directly from a controller for auth purposes.
+- Login overwrites the existing token (single-session-per-user). No server-side logout endpoint.
+
+## How to add a new endpoint
+
+1. Add a Zod schema to `<module>.validation.js` shaped as `z.object({ body|query|params: ... })`.
+2. Add the business logic to `<module>.service.js`. Throw `new AppError(message, status)` on expected failures; let unexpected errors bubble.
+3. Add a thin handler to `<module>.controller.js`: read `req.validated.{body|query|params}` and `req.user`, call the service, send the response. **No try/catch** — Express 5 forwards async rejections, the central `errorHandler` shapes the response.
+4. Wire it in `<module>.routes.js` as: `limiter → validate(schema) → [requireAuth] → controller`.
+
+Error responses are always `{ status, message }`. Validation failures additionally include `issues: [{ path, message }]`.
 
 ## LiveKit token endpoint
 
-`GET /api/v1/meet/get-token?room=<r>&username=<u>` is **unauthenticated**. It returns a 1h LiveKit JWT with `roomJoin`, `canPublish`, `canSubscribe`, **and `roomCreate`**. The token's `identity` is `${username}-${randomUUID}` to prevent identity collisions when two callers pick the same name; `name` is the raw username (used for chat display). Don't drop the UUID suffix without auditing — LiveKit treats two participants with the same identity as one and will disconnect the older one.
+`GET /api/v1/meet/get-token?room=<r>&username=<u>` is **unauthenticated**. Returns a 1h LiveKit JWT with `roomJoin`, `canPublish`, `canSubscribe`, **and `roomCreate`**. Identity is `${username}-${randomUUID}` to prevent collisions when two callers pick the same name; `name` is the raw username (used for chat display). Don't drop the UUID suffix — LiveKit treats two participants with the same identity as one and disconnects the older one.
 
 ## Mongoose models
 
-Both schemas are minimal and live in `src/models/`:
-
-- `User` — `name`, `username` (unique), `password` (bcrypt 10 rounds), `token`, `tokenExpiry`. No timestamps option set.
-- `Meeting` — `user_id` (stores `username`, **not** an ObjectId — keep this in mind when querying), `meetingCode`, `date`.
-
-Meetings are written by `addToHistory` whenever a logged-in user joins a code via `/home`. Guests do not create history rows.
+- `User` (`modules/users/users.model.js`) — `name`, `username` (unique), `password` (bcrypt 10 rounds), `token`, `tokenExpiry`.
+- `Meeting` (`modules/users/meeting.model.js`) — `user_id` stores `username` (a string, **not** an ObjectId), `meetingCode`, `date`. Lives under `users/` because it's user-history data.
 
 ## Things that look like bugs but aren't
 
-- `register` returns `httpStatus.FOUND` (302) on duplicate username. Frontend reads `err.response.status` to drive UX — changing the status will break the auth page.
-- `app.js` calls `start()` at the top level and lets unhandled rejections bubble. Do not wrap it in a try/catch that swallows — Mongoose connection errors should crash the process so the platform restarts it.
+- The `add_to_activity` endpoint accepts both `meetingCode` and `meeting_code` in the body — the Zod schema in `users.validation.js` normalizes either form to `meetingCode`. Frontend currently sends `meeting_code`; new clients should send `meetingCode`.
+- `app.js` calls `start()` at the top level and lets unhandled rejections bubble. Don't wrap in try/catch — Mongoose connection failures should crash the process so the platform restarts it.
+- All rate-limiters share the same window/cap (15 min / 100 req per IP). They're named separately so behavior can diverge later without touching call sites.

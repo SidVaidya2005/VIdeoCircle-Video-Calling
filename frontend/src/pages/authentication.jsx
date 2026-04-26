@@ -6,8 +6,8 @@ import { AuthContext } from '../contexts/AuthContext';
 import { Snackbar } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import '../App.css';
-import goldTheme from '../themes/goldTheme';
-import useASCIICanvas from '../hooks/useASCIICanvas';
+import goldTheme from '../shared/theme/goldTheme';
+import useASCIICanvas from '../shared/hooks/useASCIICanvas';
 
 export default function Authentication() {
     const [username, setUsername] = React.useState('');

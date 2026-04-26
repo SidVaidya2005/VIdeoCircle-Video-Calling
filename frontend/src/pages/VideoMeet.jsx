@@ -77,7 +77,7 @@ function RoomView({ onEndCall }) {
 
 // ── Page root ────────────────────────────────────────────────────────────────
 export default function VideoMeetComponent() {
-    const { url: meetingCode } = useParams();
+    const { meetingCode } = useParams();
     const navigate = useNavigate();
 
     const [phase, setPhase] = useState('lobby'); // 'lobby' | 'connecting' | 'room'

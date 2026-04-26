@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { TextField, Button } from '@mui/material';
 import styles from '../../styles/videoComponent.module.css';
 import '../../App.css';
-import useASCIICanvas from '../../hooks/useASCIICanvas';
+import useASCIICanvas from '../../shared/hooks/useASCIICanvas';
 
 export default function LobbyScreen({ connecting, error, onJoin, navigate }) {
     const lobbyCanvasRef = useASCIICanvas();

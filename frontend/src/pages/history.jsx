@@ -3,7 +3,7 @@ import { AuthContext } from '../contexts/AuthContext'
 import { useNavigate } from 'react-router-dom';
 import { Snackbar } from '@mui/material';
 import "../App.css";
-import useASCIICanvas from '../hooks/useASCIICanvas';
+import useASCIICanvas from '../shared/hooks/useASCIICanvas';
 import withAuth from '../utils/withAuth';
 
 function History() {
