@@ -1,0 +1,10 @@
+:root {
+  --gold-primary: #D4A017;
+  --gold-primary-soft: rgba(212, 160, 23, 0.55);
+  --gold-primary-dim: rgba(212, 160, 23, 0.25);
+  --gold-primary-faint: rgba(212, 160, 23, 0.03);
+  --gold-glow: rgba(185, 138, 18, 0.42);
+
+  --ink-primary: #080808;
+  --ink-secondary: rgba(8, 8, 8, 0.8);
+}
