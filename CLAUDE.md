@@ -33,6 +33,15 @@ Browser ──REST(Axios)──► Express ──► MongoDB Atlas
 
 ## Common commands
 
+Fresh clone (run both, in separate terminals):
+
+```bash
+(cd backend  && npm install && npm run dev)   # :8000
+(cd frontend && npm install && npm start)     # :3000
+```
+
+Per-package details:
+
 ```bash
 # Backend
 cd backend && npm install && npm run dev      # nodemon on PORT (default 8000)
