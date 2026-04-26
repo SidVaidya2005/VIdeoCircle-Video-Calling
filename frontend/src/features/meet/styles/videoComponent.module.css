@@ -1,0 +1,556 @@
+/* ================================================================
+   LOBBY SCREEN
+   ================================================================ */
+
+.lobbyCanvas {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.lobbyOverlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background:
+        radial-gradient(ellipse at 50% 60%, rgba(8, 8, 8, 0.08) 0%, rgba(8, 8, 8, 0.45) 100%),
+        linear-gradient(to bottom, rgba(8,8,8,0.35) 0%, transparent 18%, transparent 75%, rgba(8,8,8,0.4) 100%);
+    pointer-events: none;
+}
+
+.lobbyContainer {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    background: #080808;
+}
+
+.lobbyContent {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+}
+
+.lobbyMain {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: 2rem;
+}
+
+.lobbyMain h2 {
+    font-family: 'Anton', 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 400;
+    color: #D4A017;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.lobbyCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2rem;
+    background: rgba(4, 4, 4, 0.82);
+    border: 1px solid rgba(212, 160, 23, 0.22);
+    border-radius: 0;
+    padding: 2.5rem 2rem;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+    width: 380px;
+    max-width: 92vw;
+}
+
+.lobbyInputRow {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
+.lobbyMediaControls {
+    display: flex;
+    gap: 0.75rem;
+    width: 100%;
+    justify-content: center;
+}
+
+.lobbyMediaBtn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    border: 1px solid rgba(212, 160, 23, 0.3);
+    padding: 0.45rem 1rem;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    flex: 1;
+    text-align: center;
+}
+
+.lobbyMediaBtnOn {
+    background: #D4A017;
+    color: #080808;
+    border-color: #D4A017;
+}
+
+.lobbyMediaBtnOn:hover {
+    background: #b8890f;
+    border-color: #b8890f;
+}
+
+.lobbyMediaBtnOff {
+    background: transparent;
+    color: rgba(212, 160, 23, 0.45);
+    border-color: rgba(212, 160, 23, 0.2);
+}
+
+.lobbyMediaBtnOff:hover {
+    border-color: rgba(212, 160, 23, 0.4);
+    color: rgba(212, 160, 23, 0.65);
+}
+
+.lobbyMediaBtn:active {
+    transform: scale(0.94);
+    opacity: 0.8;
+    transition: all 0.1s ease;
+}
+
+.lobbyVideo {
+    width: 320px;
+    max-width: 80vw;
+    border-radius: 0;
+    border: 1px solid rgba(212, 160, 23, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    background: rgba(4, 4, 4, 0.8);
+}
+
+/* ================================================================
+   MEET VIDEO ROOM
+   ================================================================ */
+
+.meetVideoContainer {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+    height: 100dvh;
+    background: #080808;
+    overflow: hidden;
+}
+
+.meetMainArea {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    height: 100vh;
+    height: 100dvh;
+}
+
+.meetUserVideoWrapper {
+    position: absolute;
+    bottom: 88px;
+    left: 16px;
+    height: 22vh;
+    width: auto;
+    z-index: 20;
+    overflow: hidden;
+    border: 1px solid rgba(212, 160, 23, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+}
+
+.meetUserVideo {
+    height: 100%;
+    width: auto;
+    display: block;
+    border-radius: 0;
+    object-fit: cover;
+}
+
+/* ================================================================
+   CAMERA / MIC OFF OVERLAYS
+   ================================================================ */
+
+.videoOffOverlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(8, 8, 8, 0.88);
+    z-index: 2;
+    pointer-events: none;
+}
+
+.videoOffOverlay svg {
+    font-size: 2.5rem;
+    color: #D4A017;
+    display: block;
+}
+
+/* Smaller icon for the local PIP */
+.meetUserVideoWrapper .videoOffOverlay svg {
+    font-size: 1.4rem;
+}
+
+.micOffBadge {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #080808;
+    border: 1px solid #D4A017;
+    padding: 4px;
+    z-index: 3;
+    pointer-events: none;
+}
+
+.micOffBadge svg {
+    font-size: 0.95rem;
+    color: #D4A017;
+    display: block;
+}
+
+/* Smaller badge for the local PIP */
+.meetUserVideoWrapper .micOffBadge {
+    bottom: 6px;
+    right: 6px;
+    padding: 2px;
+}
+
+.meetUserVideoWrapper .micOffBadge svg {
+    font-size: 0.72rem;
+}
+
+/* ================================================================
+   CONTROL BAR
+   ================================================================ */
+
+.buttonContainers {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 30;
+    display: flex;
+    justify-content: center;
+    padding: 1rem 0 1.5rem;
+    background: linear-gradient(to top, rgba(8, 8, 8, 0.96) 0%, transparent 100%);
+}
+
+.controlBar {
+    display: flex;
+    gap: 0;
+    align-items: center;
+    background: rgba(4, 4, 4, 0.92);
+    border: 1px solid rgba(212, 160, 23, 0.22);
+    padding: 0;
+}
+
+.controlBar :global(.MuiIconButton-root) {
+    color: rgba(212, 160, 23, 0.65) !important;
+    background: transparent !important;
+    border: none !important;
+    border-right: 1px solid rgba(212, 160, 23, 0.12) !important;
+    border-radius: 0 !important;
+    width: 54px !important;
+    height: 54px !important;
+    transition: background 0.15s, color 0.15s !important;
+}
+
+.controlBar :global(.MuiIconButton-root:hover) {
+    background: rgba(212, 160, 23, 0.08) !important;
+    color: #D4A017 !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.controlBar :global(.MuiIconButton-root:active) {
+    background: rgba(212, 160, 23, 0.18) !important;
+    color: #D4A017 !important;
+    transform: scale(0.91) !important;
+    transition: all 0.1s ease !important;
+}
+
+.controlBar svg {
+    font-size: 1.3rem;
+}
+
+.endCallBtn :global(.MuiIconButton-root) {
+    color: #D4A017 !important;
+    background: rgba(212, 160, 23, 0.06) !important;
+}
+
+.endCallBtn :global(.MuiIconButton-root:hover) {
+    background: #D4A017 !important;
+    color: #080808 !important;
+}
+
+/* ================================================================
+   CONFERENCE VIEW
+   ================================================================ */
+
+.conferenceView {
+    display: grid;
+    gap: 8px;
+    padding: 8px 8px 96px;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    align-content: center;
+    grid-template-columns: repeat(var(--grid-cols, 1), 1fr);
+    grid-template-rows: repeat(var(--grid-rows, 1), 1fr);
+}
+
+.conferenceCell {
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    border: 1px solid rgba(212, 160, 23, 0.2);
+    background: rgba(4, 4, 4, 0.9);
+}
+
+.conferenceCell video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* ================================================================
+   CHAT ROOM
+   ================================================================ */
+
+.chatRoom {
+    width: 375px;
+    flex-shrink: 0;
+    height: 100vh;
+    height: 100dvh;
+    background: rgba(4, 4, 4, 0.96);
+    border-left: 1px solid rgba(212, 160, 23, 0.22);
+    display: flex;
+    flex-direction: column;
+}
+
+.chatHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(212, 160, 23, 0.15);
+}
+
+.chatRoom h1 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 400;
+    color: #D4A017;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin: 0;
+    padding: 1rem 1.2rem;
+    border-bottom: none;
+}
+
+/* Hidden on desktop; shown on mobile via media query */
+.chatCloseBtn {
+    display: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    color: #D4A017;
+    background: transparent;
+    border: none;
+    padding: 1rem 1.2rem;
+    cursor: pointer;
+    letter-spacing: 0.06em;
+    line-height: 1;
+}
+
+.chatContainer {
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem 1.2rem 0;
+}
+
+.chattingDisplay {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 80px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(212, 160, 23, 0.15) transparent;
+}
+
+.chattingDisplay::-webkit-scrollbar {
+    width: 3px;
+}
+
+.chattingDisplay::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.chattingDisplay::-webkit-scrollbar-thumb {
+    background: rgba(212, 160, 23, 0.2);
+}
+
+.chattingDisplay p {
+    color: rgba(212, 160, 23, 0.75);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    letter-spacing: 0.02em;
+}
+
+.chattingArea {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    gap: 0;
+    border-top: 1px solid rgba(212, 160, 23, 0.15);
+    background: rgba(4, 4, 4, 0.98);
+}
+
+.chattingArea :global(.MuiTextField-root) {
+    flex: 1;
+}
+
+.chattingArea :global(.MuiOutlinedInput-root) {
+    background: transparent !important;
+    color: #D4A017 !important;
+    border-radius: 0 !important;
+    font-size: 0.82rem !important;
+    font-family: 'JetBrains Mono', monospace !important;
+}
+
+.chattingArea :global(.MuiOutlinedInput-notchedOutline) {
+    border: none !important;
+}
+
+.chattingArea :global(.MuiInputLabel-root) {
+    color: rgba(212, 160, 23, 0.35) !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.8rem !important;
+    letter-spacing: 0.04em !important;
+}
+
+.chattingArea :global(.MuiInputLabel-root.Mui-focused) {
+    color: #D4A017 !important;
+}
+
+.chattingArea :global(.MuiButton-contained) {
+    background: #D4A017 !important;
+    color: #080808 !important;
+    font-weight: 700 !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.72rem !important;
+    letter-spacing: 0.06em !important;
+    text-transform: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    min-width: 64px !important;
+    align-self: stretch !important;
+    border-left: 1px solid rgba(212, 160, 23, 0.22) !important;
+}
+
+.chattingArea :global(.MuiButton-contained:hover) {
+    background: transparent !important;
+    color: #D4A017 !important;
+}
+
+/* ================================================================
+   MOBILE RESPONSIVE — VIDEO ROOM
+   ================================================================ */
+
+@media (max-width: 768px) {
+    /* ── Container: needs relative so chat overlay is scoped to it ── */
+    .meetVideoContainer {
+        position: relative;
+    }
+
+    /* ── Self-video: move to top-right, shrink so it clears controls ── */
+    .meetUserVideoWrapper {
+        top: 16px;
+        right: 16px;
+        bottom: auto;
+        left: auto;
+        height: 120px;
+        max-width: 30vw;
+    }
+
+    .meetUserVideo {
+        width: 100%;
+        height: 100%;
+    }
+
+    /* ── Chat: absolute overlay instead of a side column ── */
+    .chatRoom {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 80px; /* clear the control bar */
+        width: auto;
+        height: auto;
+        border-left: none;
+        border-bottom: 1px solid rgba(212, 160, 23, 0.22);
+        z-index: 40;
+    }
+
+    /* ── Close button: visible only on mobile ── */
+    .chatCloseBtn {
+        display: block;
+    }
+
+    /* ── Conference grid: single column, each cell a fixed viewport height ── */
+    .conferenceView {
+        grid-template-columns: 1fr;
+        grid-template-rows: unset;
+        grid-auto-rows: minmax(35vh, 1fr);
+        align-content: start;
+        overflow-y: auto;
+        padding-bottom: 96px;
+    }
+
+    /* ── Control bar: safe spacing between buttons ── */
+    .controlBar {
+        gap: 8px;
+        padding: 0 8px;
+    }
+
+    /* ── End call: visual separation so it can't be accidentally tapped ── */
+    .endCallBtn {
+        margin: 0 8px;
+        border-left: 1px solid rgba(212, 160, 23, 0.25);
+        border-right: 1px solid rgba(212, 160, 23, 0.25);
+    }
+}
+
+/* ================================================================
+   MOBILE RESPONSIVE — LOBBY SCREEN
+   ================================================================ */
+
+@media (max-width: 768px) {
+  /* Card: fill the available width, reduce padding */
+  .lobbyCard {
+    width: 100%;
+    max-width: 100%;
+    padding: 1.5rem 1rem;
+  }
+
+  /* Video preview: fill card width so it doesn't overflow */
+  .lobbyVideo {
+    width: 100%;
+    max-width: 100%;
+  }
+}
