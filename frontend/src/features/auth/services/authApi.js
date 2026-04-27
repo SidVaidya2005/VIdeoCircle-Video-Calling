@@ -9,10 +9,4 @@ export const authApi = {
 
   verify: () =>
     apiClient.get("/users/verify").then((r) => r.data),
-
-  getHistory: () =>
-    apiClient.get("/users/get_all_activity").then((r) => r.data),
-
-  addHistory: ({ meetingCode }) =>
-    apiClient.post("/users/add_to_activity", { meetingCode }).then((r) => r.data),
 };
