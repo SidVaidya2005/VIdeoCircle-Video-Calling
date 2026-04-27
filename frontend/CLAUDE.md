@@ -21,6 +21,8 @@ There is no lint script — ESLint runs implicitly via `react-scripts`. Only `Ap
 
 ## Required environment (`frontend/.env`)
 
+Copy `frontend/.env.example` to `frontend/.env` as a starting template.
+
 - `REACT_APP_SERVER_URL` — backend base URL. Falls back to `http://localhost:8000`.
 - `REACT_APP_LIVEKIT_URL` — **required**, used by `RoomShell.jsx` as `<LiveKitRoom serverUrl={...}>`. There is no fallback — if missing, the connect step fails silently with a generic error.
 
@@ -78,7 +80,7 @@ src/
 
 ## Auth pattern
 
-- `features/auth/context/AuthContext.jsx` exposes `handleLogin`, `handleRegister`, `handleLogout`, `verifyToken` via `useAuth()`. The token lives in `localStorage` under the key `token`, accessed only through `shared/lib/storage.js`.
+- `features/auth/context/AuthContext.jsx` exposes `handleLogin`, `handleRegister`, `handleLogout`, `verifyToken` via `useAuth()`. The token lives in `localStorage` under the key `token`, accessed only through `shared/lib/storage.js`. `handleLogout` is **client-only** — it just clears storage; there is no `/logout` endpoint on the backend.
 - `features/auth/components/withAuth.jsx` is a guard HOC: on mount it calls `verifyToken()` against the backend; while checking it returns `null` (blank screen, no spinner). On invalid token it clears storage and routes to `/auth`. Wrap any new authenticated page with `withAuth(...)` — see `HomePage.jsx` and `HistoryPage.jsx`.
 - After successful login, `AuthPage` redirects to `/guest`, not `/home`. This is intentional based on current UX flow; don't "fix" it without asking.
 - The Axios `apiClient` (`shared/lib/apiClient.js`) attaches `Authorization: Bearer <token>` automatically via a request interceptor. Don't read the token directly in features — call the API helpers.
@@ -106,6 +108,8 @@ These components use LiveKit hooks and **must** be rendered inside `<LiveKitRoom
 
 ## UI conventions
 
+For the full visual system (color ladder, type scale, component patterns), read `../.claude/specs/design.md` before any non-trivial UI work — the notes below are a quick reference, not the full system.
+
 - **Bracket-notation buttons** (`[JOIN]`, `[CHAT]`, `[×]`) are the visual language — preserve them in any new control.
 - **Fonts**: `Anton` (display headings) and `JetBrains Mono` (body, inputs, controls). Loaded via `index.css` / `globals.css`.
 - **Color**: gold `#D4A017` on near-black `#080808`. Prefer the CSS vars in `shared/styles/tokens.css` (`--gold-primary`, `--ink-primary`, …) for new code; existing files still use the literals.
@@ -116,9 +120,9 @@ These components use LiveKit hooks and **must** be rendered inside `<LiveKitRoom
 
 - Don't introduce a separate WebSocket/Socket.IO client for chat — chat is `useChat()` over LiveKit's data channel.
 - Don't store the LiveKit JWT in `localStorage` — it's intentionally held only in component state for the duration of the call.
-- Don't read `process.env.REACT_APP_*` outside `shared/lib/env.js`. CRA inlines env vars at build time, so scattering reads makes them harder to audit and override.
+- Don't read `process.env.REACT_APP_*` outside `shared/lib/env.js` (see Required environment above). CRA inlines them at build time — scattered reads can't be overridden without a rebuild.
 - Don't import `globals.css` from features — it's imported once in `src/index.js`. Use CSS modules (e.g. `features/meet/styles/videoComponent.module.css`) for feature-scoped styles.
-- Don't migrate to React Router v7 / data routers without checking that `withAuth` and the catch-all `/:meetingCode` route still behave; the catch-all is fragile.
+- Don't migrate to React Router v7 / data routers without checking that `withAuth` and the catch-all `/:meetingCode` route still behave (see Routing layout above).
 
 ## Adding a new page
 

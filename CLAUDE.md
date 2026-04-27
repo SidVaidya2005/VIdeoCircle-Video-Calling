@@ -58,7 +58,15 @@ There is no root-level package.json or task runner. Run scripts from inside each
 
 ## Cross-cutting gotchas
 
-- `CLAUDE.md` and `vercel.json` are both in `.gitignore` (root). The Vercel project config lives outside the repo; don't assume `vercel.json` will be present in clones.
-- Both `.env` files are required for any meaningful local dev. The frontend will silently fail to connect to video calls if `REACT_APP_LIVEKIT_URL` is missing — there is no fallback.
+- `vercel.json` is gitignored — the Vercel project config lives outside the repo, so don't assume it will be present in clones. (`CLAUDE.md` files **are** tracked.)
+- Both `.env` files are required for any meaningful local dev. Templates: `backend/.env.example` and `frontend/.env.example` — copy these to `.env` and fill in values. The frontend will silently fail to connect to video calls if `REACT_APP_LIVEKIT_URL` is missing — there is no fallback.
 - The frontend route `/:meetingCode` is a **catch-all** for meeting codes (`frontend/src/app/routes.jsx`). It is registered last; any new top-level route (e.g. `/settings`) must be added **above** it or it will be swallowed as a meeting code.
 - `LIVEKIT_URL` (backend) and `REACT_APP_LIVEKIT_URL` (frontend) must point at the same LiveKit project — the backend embeds it in the token response and the frontend uses its own env var to actually connect. Mismatched values produce a connect that fails after the JWT validates.
+
+## Deeper context — `.claude/specs/`
+
+Three checked-in design docs that go beyond what fits in CLAUDE.md. Read them when the cross-cutting notes here aren't enough:
+
+- `.claude/specs/design.md` — full Gold Brutalist visual system (color tokens, type scale, component patterns). Read before any UI/styling work.
+- `.claude/specs/techstack.md` — every dependency with version + role.
+- `.claude/specs/workflow.md` — first-time setup, daily dev loop, deploy flow.

@@ -52,7 +52,7 @@ There is no test/lint script.
 
 ## Required environment
 
-Read once in `config/env.js`. The app **throws at boot** if any required var is missing (was previously a per-request 500). Set in `backend/.env`:
+Read once in `config/env.js`. The app **throws at boot** if any required var is missing (was previously a per-request 500). Copy `backend/.env.example` to `backend/.env` as a starting template:
 
 - `MONGO_URL` — required.
 - `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET`, `LIVEKIT_URL` — all required.
