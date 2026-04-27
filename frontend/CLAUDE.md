@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with th
 ## Stack & conventions
 
 - **Create React App (react-scripts 5)** + React 18 + React Router v6. Not Vite, not Next — `npm start` is the CRA dev server.
-- **MUI v5** for inputs/icons (`@mui/material`, `@mui/icons-material`), but the global look is hand-styled in `App.css` and `styles/videoComponent.module.css`. The MUI theme defined at `src/themes/goldTheme.js` exists but is **not currently wired** into `App.js` (no `ThemeProvider`); component-level `sx` overrides do the styling. Don't assume the theme is active.
+- **MUI v5** for inputs/icons (`@mui/material`, `@mui/icons-material`). The MUI theme `shared/theme/goldTheme.js` is wired globally in `app/providers.jsx` via `<ThemeProvider>` — anything you build inherits it. Most pages still carry inline `sx` overrides from the pre-theme era; cleaning those up is out of scope for now.
 - **LiveKit React SDK** (`@livekit/components-react`, `livekit-client`) drives all in-call state. Hooks like `useLocalParticipant`, `useTracks`, `useChat` only work inside `<LiveKitRoom>` — see "Component placement rules" below.
 
 ## Commands
@@ -21,46 +21,84 @@ There is no lint script — ESLint runs implicitly via `react-scripts`. Only `Ap
 
 ## Required environment (`frontend/.env`)
 
-- `REACT_APP_SERVER_URL` — backend base URL. Falls back to `http://localhost:8000` (`src/environment.js`).
-- `REACT_APP_LIVEKIT_URL` — **required**, used directly in `pages/VideoMeet.jsx` as `<LiveKitRoom serverUrl={...}>`. There is no fallback — if missing, the connect step fails silently with a generic error.
+- `REACT_APP_SERVER_URL` — backend base URL. Falls back to `http://localhost:8000`.
+- `REACT_APP_LIVEKIT_URL` — **required**, used by `RoomShell.jsx` as `<LiveKitRoom serverUrl={...}>`. There is no fallback — if missing, the connect step fails silently with a generic error.
 
-CRA bakes these into the bundle at build time; changing them means a rebuild/redeploy.
+Both are read in exactly one place: `src/shared/lib/env.js`. CRA bakes them into the bundle at build time; changing them means a rebuild/redeploy.
 
-## Routing layout (`src/App.js`)
+## Layout
 
 ```
-/                → landing.jsx          (public)
-/auth            → authentication.jsx   (public, register/login)
-/home            → home.jsx             (withAuth — requires token)
-/guest           → joinmeet.jsx         (public, post-login redirect lands here)
-/history         → history.jsx          (withAuth)
-/:url            → VideoMeet.jsx        (CATCH-ALL — meeting code lives in :url)
+src/
+  app/
+    App.jsx                        // mouse-position listener + <Providers><AppRoutes/></Providers>
+    providers.jsx                  // <BrowserRouter><ThemeProvider><AuthProvider>
+    routes.jsx                     // single source of truth for routes
+  features/
+    auth/
+      components/withAuth.jsx      // HOC that gates routes on a valid token
+      context/AuthContext.jsx      // useAuth() — login/register/logout/verify
+      pages/AuthPage.jsx           // /auth (login + register)
+      pages/GuestLandingPage.jsx   // /guest (enter a meeting code, no auth)
+      services/authApi.js          // register/login/verify
+    home/pages/HomePage.jsx        // /home (logged-in landing)
+    history/
+      pages/HistoryPage.jsx        // /history
+      services/historyApi.js       // get_all_activity / add_to_activity
+    landing/pages/LandingPage.jsx  // /
+    meet/
+      components/                  // LobbyScreen, ConferenceGrid, MeetControls, ChatPanel, LocalVideoPIP
+      livekit/RoomShell.jsx        // wraps <LiveKitRoom> + RoomAudioRenderer
+      livekit/tokenApi.js          // GET /api/v1/meet/get-token
+      livekit/useMeetingRoom.js    // lobby | connecting | room phase machine
+      pages/MeetPage.jsx           // /:meetingCode
+      styles/videoComponent.module.css
+  shared/
+    hooks/useASCIICanvas.js
+    lib/apiClient.js               // single Axios instance + Authorization interceptor
+    lib/env.js                     // only place that reads process.env.*
+    lib/storage.js                 // wraps localStorage("token")
+    styles/globals.css             // formerly App.css — imported once in index.js
+    styles/tokens.css              // CSS custom properties (--gold-primary, etc.)
+    theme/goldTheme.js
 ```
 
-`/:url` matches **any** single-segment path. Add new top-level routes **above** it in `App.js` or they'll be treated as meeting codes. The param is named `url`; `VideoMeet.jsx` aliases it as `meetingCode` via `const { url: meetingCode } = useParams()`.
+## Routing layout (`app/routes.jsx`)
+
+```
+/                → LandingPage          (public)
+/auth            → AuthPage             (public, register/login)
+/home            → HomePage             (withAuth — requires token)
+/guest           → GuestLandingPage     (public, post-login redirect lands here)
+/history         → HistoryPage          (withAuth)
+/:meetingCode    → MeetPage             (CATCH-ALL — single-segment paths are meeting codes)
+```
+
+`/:meetingCode` matches **any** single-segment path. Add new top-level routes **above** it in `app/routes.jsx` or they'll be treated as meeting codes.
 
 ## Auth pattern
 
-- `contexts/AuthContext.jsx` exposes `handleLogin`, `handleRegister`, `handleLogout`, `verifyToken`, `getHistoryOfUser`, `addToUserHistory`. The token lives in `localStorage` under the key `token`.
-- `utils/withAuth.jsx` is a guard HOC: on mount it calls `verifyToken()` against the backend; while checking it returns `null` (blank screen, no spinner). On invalid token it clears `localStorage` and routes to `/auth`. Wrap any new authenticated page with `withAuth(...)` — see `home.jsx` and `history.jsx`.
-- After successful login, `handleLogin` redirects to `/guest`, not `/home`. This is intentional based on current UX flow; don't "fix" it without asking.
+- `features/auth/context/AuthContext.jsx` exposes `handleLogin`, `handleRegister`, `handleLogout`, `verifyToken` via `useAuth()`. The token lives in `localStorage` under the key `token`, accessed only through `shared/lib/storage.js`.
+- `features/auth/components/withAuth.jsx` is a guard HOC: on mount it calls `verifyToken()` against the backend; while checking it returns `null` (blank screen, no spinner). On invalid token it clears storage and routes to `/auth`. Wrap any new authenticated page with `withAuth(...)` — see `HomePage.jsx` and `HistoryPage.jsx`.
+- After successful login, `AuthPage` redirects to `/guest`, not `/home`. This is intentional based on current UX flow; don't "fix" it without asking.
+- The Axios `apiClient` (`shared/lib/apiClient.js`) attaches `Authorization: Bearer <token>` automatically via a request interceptor. Don't read the token directly in features — call the API helpers.
 
-## VideoMeet flow (`pages/VideoMeet.jsx`)
+## Meet flow (`features/meet/`)
 
-Three phases driven by local state:
+`MeetPage` is a thin shell over `useMeetingRoom`, which owns the three phases:
 
 1. `lobby` — renders `<LobbyScreen>` only. The lobby acquires its **own** `getUserMedia` preview stream and stops all tracks before calling `onJoin` so LiveKit can re-acquire the same devices. Don't add code that holds onto the preview stream past join — Chrome will refuse a second `getUserMedia` for the camera.
-2. `connecting` — fetches `${REACT_APP_SERVER_URL}/api/v1/meet/get-token` (bare `fetch`, not the Axios `client` from AuthContext, because the meet endpoint lives at a different base path).
-3. `room` — mounts `<LiveKitRoom>` with `adaptiveStream` and `dynacast` and `VideoPresets.h720`. Capture defaults are intentional — bumping resolution affects every participant via simulcast.
+2. `connecting` — calls `livekit/tokenApi.js → fetchMeetingToken()` (which goes through the shared Axios client at `/api/v1/meet/get-token`).
+3. `room` — `<RoomShell>` mounts `<LiveKitRoom>` with `adaptiveStream`, `dynacast`, and `VideoPresets.h720`. Capture defaults are intentional — bumping resolution affects every participant via simulcast.
 
-`onDisconnected` navigates to `/`, which unmounts `<LiveKitRoom>` and tears down tracks. The end-call button passes the same handler.
+`onDisconnected` navigates to `/` via the `handleLeave` returned from `useMeetingRoom`, which unmounts `<LiveKitRoom>` and tears down tracks. The end-call button passes the same handler.
 
 ## Component placement rules (in-call components)
 
 These components use LiveKit hooks and **must** be rendered inside `<LiveKitRoom>` or they'll throw:
 
 - `LocalVideoPIP` (uses `useLocalParticipant`)
-- `RoomView` and everything it renders (`ConferenceGrid`, `MeetControls`, `ChatPanel`)
+- `RoomView` (defined inside `RoomShell.jsx`) and everything it renders (`ConferenceGrid`, `MeetControls`, `ChatPanel`)
 
 `<RoomAudioRenderer />` is what plays remote audio — it lives at the top of `RoomView`. Removing it silences the call without any visual indication.
 
@@ -69,12 +107,22 @@ These components use LiveKit hooks and **must** be rendered inside `<LiveKitRoom
 ## UI conventions
 
 - **Bracket-notation buttons** (`[JOIN]`, `[CHAT]`, `[×]`) are the visual language — preserve them in any new control.
-- **Fonts**: `Anton` (display headings) and `JetBrains Mono` (body, inputs, controls). Loaded via `index.css` / `App.css`.
-- **Color**: gold `#D4A017` on near-black `#080808`. CSS vars `--mouse-x` / `--mouse-y` are updated on every mousemove from `App.js` for parallax effects.
-- **ASCII canvas backgrounds**: `hooks/useASCIICanvas.js` returns a ref you attach to a `<canvas>`. It self-manages resize and a 80ms repaint interval. Multiple canvases on one page are fine but expensive — don't mount it inside `<LiveKitRoom>`.
+- **Fonts**: `Anton` (display headings) and `JetBrains Mono` (body, inputs, controls). Loaded via `index.css` / `globals.css`.
+- **Color**: gold `#D4A017` on near-black `#080808`. Prefer the CSS vars in `shared/styles/tokens.css` (`--gold-primary`, `--ink-primary`, …) for new code; existing files still use the literals.
+- **Mouse parallax**: `--mouse-x` / `--mouse-y` are updated on every mousemove from the listener in `app/App.jsx`.
+- **ASCII canvas backgrounds**: `shared/hooks/useASCIICanvas.js` returns a ref you attach to a `<canvas>`. It self-manages resize and a 80ms repaint interval. Multiple canvases on one page are fine but expensive — don't mount it inside `<LiveKitRoom>`.
 
 ## Don'ts
 
 - Don't introduce a separate WebSocket/Socket.IO client for chat — chat is `useChat()` over LiveKit's data channel.
 - Don't store the LiveKit JWT in `localStorage` — it's intentionally held only in component state for the duration of the call.
-- Don't migrate to React Router v7 / data routers without checking that `withAuth` and `useParams({ url })` still behave; the catch-all route is fragile.
+- Don't read `process.env.REACT_APP_*` outside `shared/lib/env.js`. CRA inlines env vars at build time, so scattering reads makes them harder to audit and override.
+- Don't import `globals.css` from features — it's imported once in `src/index.js`. Use CSS modules (e.g. `features/meet/styles/videoComponent.module.css`) for feature-scoped styles.
+- Don't migrate to React Router v7 / data routers without checking that `withAuth` and the catch-all `/:meetingCode` route still behave; the catch-all is fragile.
+
+## Adding a new page
+
+1. Decide the feature folder (`features/<name>/pages/<PageName>.jsx`). If the page belongs to an existing feature, drop it under that folder; otherwise create a new feature folder with `pages/`, and `services/` / `components/` as needed.
+2. If the page makes HTTP calls, add a service file under `features/<name>/services/<name>Api.js` that uses `shared/lib/apiClient`.
+3. Add the route to `app/routes.jsx` **above** `/:meetingCode`.
+4. If it requires auth, wrap the export with `withAuth(...)`.

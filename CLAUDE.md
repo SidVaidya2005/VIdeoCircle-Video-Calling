@@ -28,7 +28,7 @@ Browser ──REST(Axios)──► Express ──► MongoDB Atlas
 
 ## Two unrelated auth systems — don't conflate
 
-- **App auth** (`/api/v1/users/*`): `crypto.randomBytes(20).toString("hex")` token, 7-day TTL, stored on the user document in MongoDB. Sent as `Authorization: Bearer <token>`. Lazily expired on read inside `findValidUser()`. **Not a JWT.**
+- **App auth** (`/api/v1/users/*`): `crypto.randomBytes(20).toString("hex")` token, 7-day TTL, stored on the user document in MongoDB. Sent as `Authorization: Bearer <token>`. Validated by the `requireAuth` middleware (`backend/src/middleware/auth.js`), which lazily expires the token on read. **Not a JWT.**
 - **LiveKit auth** (`/api/v1/meet/get-token`): server-signed JWT with a 1h TTL, issued via `livekit-server-sdk`. Endpoint is **public** — anyone with the URL can join any room as any name. Treat meeting codes as the only access control.
 
 ## Common commands
@@ -60,5 +60,5 @@ There is no root-level package.json or task runner. Run scripts from inside each
 
 - `CLAUDE.md` and `vercel.json` are both in `.gitignore` (root). The Vercel project config lives outside the repo; don't assume `vercel.json` will be present in clones.
 - Both `.env` files are required for any meaningful local dev. The frontend will silently fail to connect to video calls if `REACT_APP_LIVEKIT_URL` is missing — there is no fallback.
-- The frontend route `/:url` is a **catch-all** for meeting codes (`frontend/src/App.js`). It is registered last; any new top-level route (e.g. `/settings`) must be added **above** it or it will be swallowed as a meeting code.
+- The frontend route `/:meetingCode` is a **catch-all** for meeting codes (`frontend/src/app/routes.jsx`). It is registered last; any new top-level route (e.g. `/settings`) must be added **above** it or it will be swallowed as a meeting code.
 - `LIVEKIT_URL` (backend) and `REACT_APP_LIVEKIT_URL` (frontend) must point at the same LiveKit project — the backend embeds it in the token response and the frontend uses its own env var to actually connect. Mismatched values produce a connect that fails after the JWT validates.
