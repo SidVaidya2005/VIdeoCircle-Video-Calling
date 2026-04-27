@@ -52,9 +52,6 @@ VideoCircle is a full-stack video conferencing application that lets users host 
 <div align="center">
   <img src="frontend/public/in_call_experience.png" alt="In-Call Experience" width="800" />
   <p><em>In-call view with video grid, controls, and chat panel</em></p>
-
-  <img src="frontend/public/mobile.png" alt="Mobile View" width="350" />
-  <p><em>Responsive mobile layout</em></p>
 </div>
 
 ---
@@ -87,7 +84,7 @@ VideoCircle is a full-stack video conferencing application that lets users host 
 │  └──────────────────┘  token, history   │                     │ │
 │                                         │  MongoDB Atlas      │ │
 │  ┌──────────────────┐  GET /get-token   │  ┌───────────────┐  │ │
-│  │  VideoMeet.jsx   │ ────────────────► │  │ users         │  │ │
+│  │  MeetPage.jsx    │ ────────────────► │  │ users         │  │ │
 │  │  <LiveKitRoom>   │ ◄──── JWT ─────── │  │ meetings      │  │ │
 │  └────────┬─────────┘                   └─────────────────────┘ │
 │           │  WebRTC + WebSocket (LiveKit SDK)                    │
@@ -103,8 +100,8 @@ VideoCircle is a full-stack video conferencing application that lets users host 
 
 1. User registers → password hashed with bcrypt → stored in MongoDB
 2. Login → server generates a 40-char hex token with 7-day expiry → returned to client
-3. Token stored in `localStorage`; sent as `Authorization: Bearer <token>` on protected requests
-4. `withAuth.jsx` HOC validates token on every protected route load
+3. Token stored in `localStorage` (accessed only via `shared/lib/storage.js`); sent as `Authorization: Bearer <token>` by the shared Axios interceptor (`shared/lib/apiClient.js`)
+4. The `requireAuth` middleware on the backend validates the token on every protected request; on the frontend the `withAuth` HOC gates protected routes by calling `GET /api/v1/users/verify` on mount
 
 ### Video Call Flow
 
@@ -120,55 +117,84 @@ VideoCircle is a full-stack video conferencing application that lets users host 
 
 ## Project Structure
 
+The frontend is organized by **feature folders** + a `shared/` cross-cutting layer; the backend follows a **layered architecture** (`config → middleware → modules`).
+
 ```
-Zoom-Clone/
-├── frontend/                    # React CRA app (Vercel)
-│   ├── public/
-│   │   ├── logo3.png            # App logo
-│   │   ├── in_call_experience.png
-│   │   └── mobile.png
+VideoCircle/
+├── frontend/                                 # React CRA app (Vercel)
+│   ├── public/                               # logo3.png, in_call_experience.png, manifest, …
+│   ├── jsconfig.json                         # baseUrl: "src" (cleaner imports)
 │   └── src/
-│       ├── App.js               # Route definitions
-│       ├── App.css              # Global gold-brutalist styles
-│       ├── environment.js       # Backend URL config
-│       ├── components/
+│       ├── index.js                          # ReactDOM root, imports tokens.css + globals.css
+│       ├── app/
+│       │   ├── App.jsx                       # mouse-position listener, mounts <Providers><AppRoutes/>
+│       │   ├── providers.jsx                 # <BrowserRouter><ThemeProvider><AuthProvider>
+│       │   └── routes.jsx                    # the only place routes are defined
+│       ├── features/
+│       │   ├── auth/
+│       │   │   ├── components/withAuth.jsx   # HOC gating protected routes
+│       │   │   ├── context/AuthContext.jsx   # useAuth() — login/register/logout/verify
+│       │   │   ├── pages/AuthPage.jsx        # /auth
+│       │   │   ├── pages/GuestLandingPage.jsx# /guest
+│       │   │   └── services/authApi.js       # register/login/verify
+│       │   ├── home/pages/HomePage.jsx       # /home
+│       │   ├── history/
+│       │   │   ├── pages/HistoryPage.jsx     # /history
+│       │   │   └── services/historyApi.js    # get_all_activity / add_to_activity
+│       │   ├── landing/pages/LandingPage.jsx # /
 │       │   └── meet/
-│       │       ├── ChatPanel.jsx        # In-call chat UI
-│       │       ├── ConferenceGrid.jsx   # Peer video grid
-│       │       ├── LobbyScreen.jsx      # Pre-join preview
-│       │       └── MeetControls.jsx     # Camera/mic/screen controls
-│       ├── contexts/
-│       │   └── AuthContext.jsx  # Axios client, auth + history functions
-│       ├── hooks/
-│       │   └── useASCIICanvas.js        # Animated ASCII background
-│       ├── pages/
-│       │   ├── landing.jsx      # Landing page (/)
-│       │   ├── authentication.jsx # Register/login (/auth)
-│       │   ├── home.jsx         # Authenticated home (/home)
-│       │   ├── joinmeet.jsx     # Guest join (/guest)
-│       │   ├── history.jsx      # Meeting history (/history)
-│       │   └── VideoMeet.jsx    # Video call (:meetingCode)
-│       ├── styles/
-│       │   └── videoComponent.module.css # Video call styles
-│       └── utils/
-│           └── withAuth.jsx     # Auth guard HOC
+│       │       ├── components/               # LobbyScreen, ConferenceGrid, MeetControls,
+│       │       │                             # ChatPanel, LocalVideoPIP
+│       │       ├── livekit/RoomShell.jsx     # wraps <LiveKitRoom> + RoomAudioRenderer
+│       │       ├── livekit/tokenApi.js       # GET /api/v1/meet/get-token
+│       │       ├── livekit/useMeetingRoom.js # lobby | connecting | room phase machine
+│       │       ├── pages/MeetPage.jsx        # /:meetingCode
+│       │       └── styles/videoComponent.module.css
+│       └── shared/
+│           ├── hooks/useASCIICanvas.js
+│           ├── lib/apiClient.js              # single Axios instance + Authorization interceptor
+│           ├── lib/env.js                    # the only file that reads process.env.*
+│           ├── lib/storage.js                # wraps localStorage("token")
+│           ├── styles/globals.css            # imported once in index.js
+│           ├── styles/tokens.css             # CSS custom properties (gold/ink palette)
+│           └── theme/goldTheme.js            # MUI theme (wired via providers.jsx)
 │
-├── backend/                     # Node.js / Express server (Railway)
+├── backend/                                  # Express 5 ESM (Railway)
 │   └── src/
-│       ├── app.js               # Express init, MongoDB connect, route mount
-│       ├── controllers/
-│       │   ├── user.controller.js   # Auth + history handlers
-│       │   └── meet.controller.js   # LiveKit JWT token generation
-│       ├── models/
-│       │   ├── user.model.js        # User schema (name, username, token)
-│       │   └── meeting.model.js     # Meeting schema (user_id, code, date)
-│       └── routes/
-│           ├── users.routes.js      # Auth + history routes + rate limiting
-│           └── meet.routes.js       # LiveKit token route
+│       ├── app.js                            # boot only — assemble app, mount routes, listen
+│       ├── config/
+│       │   ├── env.js                        # validates process.env once at boot
+│       │   └── db.js                         # mongoose.connect with TLS
+│       ├── middleware/
+│       │   ├── auth.js                       # requireAuth — Bearer token → req.user
+│       │   ├── errorHandler.js               # central { status, message } shaper
+│       │   ├── validate.js                   # validate(zodSchema) → req.validated
+│       │   └── rateLimit.js                  # named limiters (login, token, …)
+│       ├── modules/
+│       │   ├── users/
+│       │   │   ├── users.routes.js           # limiter → validate → [requireAuth] → controller
+│       │   │   ├── users.controller.js       # thin: req.validated → service → res
+│       │   │   ├── users.service.js          # business logic
+│       │   │   ├── users.validation.js       # Zod schemas
+│       │   │   ├── users.model.js            # Mongoose User
+│       │   │   └── meeting.model.js          # Mongoose Meeting (history records)
+│       │   └── meet/
+│       │       ├── meet.routes.js
+│       │       ├── meet.controller.js
+│       │       ├── meet.service.js           # generateLiveKitToken
+│       │       └── meet.validation.js
+│       └── utils/
+│           ├── AppError.js                   # throwable error with HTTP status
+│           ├── tokens.js                     # session-token helpers (40-hex, 7-day TTL)
+│           └── logger.js
 │
-├── vercel.json                  # Vercel frontend-only build config
+├── CLAUDE.md                                 # repo-wide guide for Claude Code
+├── frontend/CLAUDE.md                        # frontend-specific guide
+├── backend/CLAUDE.md                         # backend-specific guide
 └── README.md
 ```
+
+> The Vercel project config (`vercel.json`) is intentionally git-ignored — it lives in the Vercel project settings rather than in the repo.
 
 ---
 
@@ -336,7 +362,7 @@ All routes are rate limited to **100 requests per 15 minutes** per IP.
 
 ### Frontend (Vercel)
 
-The frontend is deployed as a static React build on Vercel. The `vercel.json` in the repo root configures the build:
+The frontend is deployed as a static React build on Vercel. The `vercel.json` config (kept outside the repo, in Vercel project settings) points the build at the `frontend/` package:
 
 ```json
 {
