@@ -1,20 +1,21 @@
 import { Route, Routes } from 'react-router-dom';
-import LandingPage from '../pages/landing';
-import Authentication from '../features/auth/pages/AuthPage';
-import VideoMeetComponent from '../features/meet/pages/MeetPage';
-import HomeComponent from '../pages/home';
-import GuestHome from '../pages/joinmeet';
-import History from '../pages/history';
+import LandingPage from '../features/landing/pages/LandingPage';
+import AuthPage from '../features/auth/pages/AuthPage';
+import GuestLandingPage from '../features/auth/pages/GuestLandingPage';
+import HomePage from '../features/home/pages/HomePage';
+import HistoryPage from '../features/history/pages/HistoryPage';
+import MeetPage from '../features/meet/pages/MeetPage';
 
 export default function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
-      <Route path="/auth" element={<Authentication />} />
-      <Route path="/home" element={<HomeComponent />} />
-      <Route path="/guest" element={<GuestHome />} />
-      <Route path="/history" element={<History />} />
-      <Route path="/:meetingCode" element={<VideoMeetComponent />} />
+      <Route path="/auth" element={<AuthPage />} />
+      <Route path="/home" element={<HomePage />} />
+      <Route path="/guest" element={<GuestLandingPage />} />
+      <Route path="/history" element={<HistoryPage />} />
+      {/* Catch-all: any single-segment path is treated as a meeting code. Keep last. */}
+      <Route path="/:meetingCode" element={<MeetPage />} />
     </Routes>
   );
 }

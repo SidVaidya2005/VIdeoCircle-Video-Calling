@@ -3,7 +3,6 @@ import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import { Snackbar } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import '../../../App.css';
 import useASCIICanvas from '../../../shared/hooks/useASCIICanvas';
 import { AuthContext } from '../context/AuthContext';
 

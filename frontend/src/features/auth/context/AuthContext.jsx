@@ -28,17 +28,11 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const getHistoryOfUser = () => authApi.getHistory();
-
-  const addToUserHistory = (meetingCode) => authApi.addHistory({ meetingCode });
-
   const value = {
     handleRegister,
     handleLogin,
     handleLogout,
     verifyToken,
-    getHistoryOfUser,
-    addToUserHistory,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
