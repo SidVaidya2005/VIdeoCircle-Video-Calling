@@ -3,11 +3,11 @@
 
   <h1>VideoCircle</h1>
 
-  <p>A full-stack real-time video conferencing web application built with LiveKit SFU, Express, and React.</p>
+  <p><strong>A real-time video conferencing platform for the browser — instant rooms, WebRTC media, and a signal-grid interface.</strong></p>
 
   <p>
     <a href="https://zoom-clone-teal-gamma.vercel.app" target="_blank">
-      <img src="https://img.shields.io/badge/Live%20Demo-zoom--clone--teal--gamma.vercel.app-FF4B4B?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo" />
+      <img src="https://img.shields.io/badge/Live%20Demo-Open-FF4B4B?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo" />
     </a>
   </p>
 
@@ -16,7 +16,8 @@
     <img src="https://img.shields.io/badge/Express-5-000000?style=flat-square&logo=express&logoColor=white" />
     <img src="https://img.shields.io/badge/LiveKit-SFU-E5484D?style=flat-square&logo=webrtc&logoColor=white" />
     <img src="https://img.shields.io/badge/MongoDB-Atlas-47A248?style=flat-square&logo=mongodb&logoColor=white" />
-    <img src="https://img.shields.io/badge/Deployed-Vercel-000?style=flat-square&logo=vercel&logoColor=white" />
+    <img src="https://img.shields.io/badge/Vercel-Frontend-000?style=flat-square&logo=vercel&logoColor=white" />
+    <img src="https://img.shields.io/badge/Railway-Backend-0B0D0E?style=flat-square&logo=railway&logoColor=white" />
   </p>
 </div>
 
@@ -24,341 +25,304 @@
 
 ## Overview
 
-VideoCircle is a full-stack video conferencing application that lets users host and join real-time video calls directly in the browser — no plugins or downloads required. It uses **LiveKit** as the SFU (Selective Forwarding Unit) for media, supporting multi-participant calls with live camera/mic toggling, screen sharing, in-call chat, and a meeting history dashboard.
+**VideoCircle** is a full-stack video conferencing application that runs entirely in the browser — no downloads, no plugins, no proxy server in the media path. Users create or join a room with a single code; the backend issues short-lived LiveKit JWTs and the browser opens a direct WebRTC connection to the LiveKit Cloud SFU for video, audio, screen share, and in-call chat.
 
-**Key Features:**
+The product is built around a minimal, opinionated visual system — warm near-black surfaces, red signal accents, JetBrains Mono typography, and CSS-grid backdrops — and a clean separation between the thin REST API and the real-time media plane.
 
-- **Multi-participant video calls** — powered by LiveKit SFU with adaptive bitrate and simulcast
-- **Lobby screen** — preview your camera and toggle audio/video before joining a call
-- **In-call chat** — real-time data channel messages via LiveKit
-- **Screen sharing** — share your screen with all call participants
-- **Guest access** — join any meeting without registering
-- **Meeting history** — authenticated users can view a log of all past sessions
-- **Token-based auth** — secure registration and login with bcrypt-hashed passwords and 7-day session tokens
-- **Signal-grid UI** — warm near-black surfaces, red signal accents, JetBrains Mono typography, CSS grid backdrops, and compact uppercase controls
-
----
-
-## Live Demo
-
-**Frontend:** [https://zoom-clone-teal-gamma.vercel.app](https://zoom-clone-teal-gamma.vercel.app)
-
-**Backend:** [https://awake-comfort-production-3879.up.railway.app](https://awake-comfort-production-3879.up.railway.app)
+**Live demo:** [zoom-clone-teal-gamma.vercel.app](https://zoom-clone-teal-gamma.vercel.app)
 
 ---
 
 ## Screenshots
 
 <div align="center">
-  <img src="frontend/public/in_call_experience.png" alt="In-Call Experience" width="800" />
-  <p><em>In-call view with video grid, controls, and chat panel</em></p>
+  <img src="frontend/public/screenshots/landing.png" alt="Landing page" width="820" />
+  <p><sub><em>Landing — product entry point with guest, register, and sign-in paths.</em></sub></p>
+</div>
+
+<div align="center">
+  <img src="frontend/public/screenshots/auth.png" alt="Authentication" width="820" />
+  <p><sub><em>Auth — sign-in / register on the same surface with token-based sessions.</em></sub></p>
+</div>
+
+<div align="center">
+  <img src="frontend/public/screenshots/guest.png" alt="Guest entry" width="820" />
+  <p><sub><em>Guest — paste a meeting code and drop into a room without an account.</em></sub></p>
+</div>
+
+<div align="center">
+  <img src="frontend/public/screenshots/lobby.png" alt="Lobby" width="820" />
+  <p><sub><em>Lobby — local camera preview, mic/camera toggles, and name entry before joining.</em></sub></p>
+</div>
+
+<div align="center">
+  <img src="frontend/public/screenshots/history.png" alt="Meeting history" width="820" />
+  <p><sub><em>History — every authenticated session is logged and listed in reverse chronological order.</em></sub></p>
+</div>
+
+<div align="center">
+  <img src="frontend/public/screenshots/in-call.png" alt="In-call experience" width="820" />
+  <p><sub><em>In-call — adaptive video grid, compact controls, and data-channel chat.</em></sub></p>
 </div>
 
 ---
 
-## Tech Stack
+## Key features
+
+- **Instant rooms** — generate a code, share the URL, and anyone can join the same room from any device.
+- **Direct WebRTC media** — peer media is routed via LiveKit Cloud (SFU); the backend never proxies audio or video.
+- **Pre-call lobby** — camera preview, mic/camera toggles, and name entry before connecting.
+- **Adaptive video grid** — simulcast + adaptive bitrate via LiveKit, falling back gracefully for slow links.
+- **Screen sharing** — publish your screen to all participants with one click.
+- **In-call chat** — real-time text over LiveKit's data channel (no separate WebSocket server).
+- **Guest access** — join meetings without registering; sign in only when you want history.
+- **Meeting history** — authenticated users get an automatic log of every room they've joined.
+- **Token-based auth** — bcrypt-hashed passwords, 7-day session tokens, central `requireAuth` middleware.
+- **Signal-grid UI** — warm near-black surfaces, red `#ff4b4b` accents, JetBrains Mono typography, CSS-grid backdrops.
+
+---
+
+## Engineering highlights
+
+- **Two unrelated auth systems, deliberately not conflated.** App auth uses a 40-character hex token stored on the user document (lazy-expired on read); LiveKit auth uses a server-signed JWT with a 1-hour TTL. They live behind separate middleware and have separate failure modes.
+- **Serverless-compatible backend.** Because chat runs over LiveKit's data channel, the Express API holds no persistent connections — it can be deployed to any Node host (Railway, Render, Fly, Vercel Functions, Lambda) without sticky sessions.
+- **Single-source environment access.** Frontend env vars are read in exactly one file (`shared/lib/env.js`); backend env is validated once at boot (`config/env.js`). Scattered `process.env.*` reads are a lint-level smell here.
+- **Phase-machine for meeting state.** `useMeetingRoom` cleanly separates `lobby → connecting → room`, including stopping the lobby's preview tracks before LiveKit reacquires the camera (Chrome refuses a second `getUserMedia` otherwise).
+- **Layered backend.** Each module follows `route → validate (Zod) → middleware → controller → service → model`, with a central `errorHandler` that shapes every error into `{ status, message }`.
+- **Catch-all routing for meeting codes.** `/:meetingCode` is intentionally registered last in the React router so any single-segment URL becomes a room — sharing a meeting is just sharing a link.
+- **No global LiveKit token in storage.** The LiveKit JWT lives only in component state for the lifetime of the call; nothing about the room survives a refresh.
+
+---
+
+## Tech stack
 
 | Layer                | Technology                                                         |
 | -------------------- | ------------------------------------------------------------------ |
 | **Frontend**         | React 18, React Router v6, Material-UI v5                          |
-| **Video/Audio**      | LiveKit Cloud (SFU), `@livekit/components-react`, `livekit-client` |
-| **HTTP Client**      | Axios                                                              |
-| **Backend**          | Node.js, Express 5, `livekit-server-sdk`                           |
-| **Database**         | MongoDB Atlas (Mongoose ODM)                                       |
-| **Authentication**   | Custom token (crypto hex), bcrypt (10 rounds)                      |
-| **Tooling**          | ESLint 9, Prettier 3                                               |
-| **Process Manager**  | PM2 (production), Nodemon (development)                            |
-| **Frontend Hosting** | Vercel                                                             |
-| **Backend Hosting**  | Railway (serverless-compatible)                                    |
+| **Real-time media**  | LiveKit Cloud (SFU), `@livekit/components-react`, `livekit-client` |
+| **HTTP client**      | Axios (single instance with auth interceptor)                      |
+| **Backend**          | Node.js, Express 5 (ESM), `livekit-server-sdk`                     |
+| **Database**         | MongoDB Atlas via Mongoose                                         |
+| **Validation**       | Zod                                                                |
+| **Auth**             | bcrypt password hashing + crypto-hex session tokens                |
+| **Tooling**          | ESLint 9, Prettier 3, Nodemon, PM2                                 |
+| **Frontend hosting** | Vercel                                                             |
+| **Backend hosting**  | Railway (serverless-compatible)                                    |
 
 ---
 
-## Architecture & Data Flow
+## Architecture
 
 ```
-┌──────────────────────────────────────────────────────────────────┐
-│  React App (Vercel)                                              │
-│                                                                  │
-│  ┌──────────────────┐   REST (Axios)    ┌─────────────────────┐ │
-│  │  Auth / Home /   │ ────────────────► │  Express Backend    │ │
-│  │  History Pages   │ ◄──────────────── │  (Railway)          │ │
-│  └──────────────────┘  token, history   │                     │ │
-│                                         │  MongoDB Atlas      │ │
-│  ┌──────────────────┐  GET /get-token   │  ┌───────────────┐  │ │
-│  │  MeetPage.jsx    │ ────────────────► │  │ users         │  │ │
-│  │  <LiveKitRoom>   │ ◄──── JWT ─────── │  │ meetings      │  │ │
-│  └────────┬─────────┘                   └─────────────────────┘ │
-│           │  WebRTC + WebSocket (LiveKit SDK)                    │
-│           ▼                                                      │
-│  ┌──────────────────────────────┐                               │
-│  │    LiveKit Cloud (SFU)       │                               │
-│  │  Video · Audio · Chat data   │                               │
-│  └──────────────────────────────┘                               │
-└──────────────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────────────┐
+│  React App (Vercel)                                                │
+│                                                                    │
+│  ┌──────────────────┐   REST (Axios)     ┌──────────────────────┐ │
+│  │  Auth / Home /   │ ─────────────────► │  Express API         │ │
+│  │  History pages   │ ◄───────────────── │  (Railway)           │ │
+│  └──────────────────┘  token, history    │                      │ │
+│                                          │  MongoDB Atlas       │ │
+│  ┌──────────────────┐  GET /get-token    │  ┌────────────────┐  │ │
+│  │  MeetPage.jsx    │ ─────────────────► │  │ users          │  │ │
+│  │  <LiveKitRoom>   │ ◄──── JWT ──────── │  │ meetings       │  │ │
+│  └────────┬─────────┘                    └──────────────────────┘ │
+│           │  WebRTC + WSS (LiveKit SDK)                            │
+│           ▼                                                        │
+│  ┌──────────────────────────────┐                                  │
+│  │   LiveKit Cloud (SFU)        │                                  │
+│  │   Video · Audio · Chat data  │                                  │
+│  └──────────────────────────────┘                                  │
+└────────────────────────────────────────────────────────────────────┘
 ```
 
-### Authentication Flow
+**Media is never proxied through the backend.** The browser opens a WebRTC + WebSocket connection directly to LiveKit Cloud. The Express server only does two things: user auth + meeting history (MongoDB-backed), and issuing short-lived LiveKit JWTs.
 
-1. User registers → password hashed with bcrypt → stored in MongoDB
-2. Login → server generates a 40-char hex token with 7-day expiry → returned to client
-3. Token stored in `localStorage` (accessed only via `shared/lib/storage.js`); sent as `Authorization: Bearer <token>` by the shared Axios interceptor (`shared/lib/apiClient.js`)
-4. The `requireAuth` middleware on the backend validates the token on every protected request; on the frontend the `withAuth` HOC gates protected routes by calling `GET /api/v1/users/verify` on mount
+### Authentication flow
 
-### Video Call Flow
+1. User registers — password hashed with bcrypt (10 rounds) and stored in MongoDB.
+2. On login the server generates a 40-character hex token with a 7-day expiry and returns it to the client.
+3. The token is kept in `localStorage` (accessed only via `shared/lib/storage.js`) and sent on every request as `Authorization: Bearer <token>` by the shared Axios interceptor.
+4. `requireAuth` validates the token on the backend; on the frontend `withAuth` calls `GET /api/v1/users/verify` on mount to gate protected pages.
 
-1. User navigates to `/home` → enters a meeting code → navigated to `/:meetingCode`
-2. **Lobby screen** — camera/mic preview, name entry, toggle controls
-3. `[JOIN]` clicked → frontend fetches a LiveKit JWT from `GET /api/v1/meet/get-token`
-4. `<LiveKitRoom>` connects directly to LiveKit Cloud using the JWT (no backend involvement in media)
-5. LiveKit SFU handles track subscription, simulcast, and adaptive bitrate automatically
-6. Chat messages are sent over LiveKit's data channel via `useChat()`
-7. On disconnect, LiveKit SDK cleans up tracks; `onDisconnected` navigates home
+### Video call flow
+
+1. User opens `/home`, enters a meeting code, and navigates to `/:meetingCode`.
+2. The **lobby** acquires a preview stream, lets the user toggle mic/camera and enter a name, then stops its tracks so LiveKit can reacquire the same devices.
+3. The frontend calls `GET /api/v1/meet/get-token` to receive a JWT and the LiveKit WebSocket URL.
+4. `<LiveKitRoom>` connects directly to LiveKit Cloud with `adaptiveStream`, `dynacast`, and `VideoPresets.h720`.
+5. Tracks are published, subscribed, and simulcast-managed entirely by the LiveKit SDK.
+6. Chat messages flow over LiveKit's data channel via `useChat()`.
+7. On disconnect, the SDK tears down tracks and `onDisconnected` navigates the user home.
 
 ---
 
-## Project Structure
+## Project structure
 
-The frontend is organized by **feature folders** + a `shared/` cross-cutting layer; the backend follows a **layered architecture** (`config → middleware → modules`).
+The frontend is organized by **feature folders** with a `shared/` cross-cutting layer; the backend follows a **layered architecture** (`config → middleware → modules`).
 
 ```
 VideoCircle/
-├── frontend/                                 # React CRA app (Vercel)
-│   ├── public/                               # logo3.png, in_call_experience.png, manifest, …
-│   ├── jsconfig.json                         # baseUrl: "src" (cleaner imports)
+├── frontend/                                  # React CRA app (Vercel)
+│   ├── public/screenshots/                    # README screenshots
 │   └── src/
-│       ├── index.js                          # ReactDOM root, imports tokens.css + globals.css
 │       ├── app/
-│       │   ├── App.jsx                       # mouse-position listener, mounts <Providers><AppRoutes/>
-│       │   ├── providers.jsx                 # <BrowserRouter><ThemeProvider><AuthProvider>
-│       │   └── routes.jsx                    # the only place routes are defined
+│       │   ├── App.jsx                        # mouse-parallax listener, mounts providers + routes
+│       │   ├── providers.jsx                  # <BrowserRouter><ThemeProvider><AuthProvider>
+│       │   └── routes.jsx                     # the only place routes are defined
 │       ├── features/
-│       │   ├── auth/
-│       │   │   ├── components/withAuth.jsx   # HOC gating protected routes
-│       │   │   ├── context/AuthContext.jsx   # useAuth() — login/register/logout/verify
-│       │   │   ├── pages/AuthPage.jsx        # /auth
-│       │   │   ├── pages/GuestLandingPage.jsx# /guest
-│       │   │   └── services/authApi.js       # register/login/verify
-│       │   ├── home/pages/HomePage.jsx       # /home
-│       │   ├── history/
-│       │   │   ├── pages/HistoryPage.jsx     # /history
-│       │   │   └── services/historyApi.js    # get_all_activity / add_to_activity
-│       │   ├── landing/pages/LandingPage.jsx # /
+│       │   ├── auth/                          # AuthPage, GuestLandingPage, AuthContext, withAuth
+│       │   ├── home/pages/HomePage.jsx        # /home
+│       │   ├── history/                       # HistoryPage + historyApi
+│       │   ├── landing/pages/LandingPage.jsx  # /
 │       │   └── meet/
-│       │       ├── components/               # LobbyScreen, ConferenceGrid, MeetControls,
-│       │       │                             # ChatPanel, LocalVideoPIP
-│       │       ├── livekit/RoomShell.jsx     # wraps <LiveKitRoom> + RoomAudioRenderer
-│       │       ├── livekit/tokenApi.js       # GET /api/v1/meet/get-token
-│       │       ├── livekit/useMeetingRoom.js # lobby | connecting | room phase machine
-│       │       ├── pages/MeetPage.jsx        # /:meetingCode
-│       │       └── styles/videoComponent.module.css
+│       │       ├── components/                # LobbyScreen, ConferenceGrid, MeetControls,
+│       │       │                              # ChatPanel, LocalVideoPIP
+│       │       ├── livekit/RoomShell.jsx      # wraps <LiveKitRoom> + RoomAudioRenderer
+│       │       ├── livekit/tokenApi.js        # GET /api/v1/meet/get-token
+│       │       ├── livekit/useMeetingRoom.js  # lobby | connecting | room phase machine
+│       │       └── pages/MeetPage.jsx         # /:meetingCode
 │       └── shared/
-│           ├── lib/apiClient.js              # single Axios instance + Authorization interceptor
-│           ├── lib/env.js                    # the only file that reads process.env.*
-│           ├── lib/storage.js                # wraps localStorage("token")
-│           ├── styles/globals.css            # imported once in index.js
-│           ├── styles/tokens.css             # CSS custom properties (near-black/red palette)
-│           └── theme/goldTheme.js            # legacy filename; current MUI theme
+│           ├── lib/apiClient.js               # single Axios instance + Authorization interceptor
+│           ├── lib/env.js                     # the only file that reads process.env.*
+│           ├── lib/storage.js                 # wraps localStorage("token")
+│           ├── styles/tokens.css              # CSS custom properties (near-black/red palette)
+│           ├── styles/globals.css             # imported once in index.js
+│           └── theme/goldTheme.js             # current MUI theme (legacy filename)
 │
-├── backend/                                  # Express 5 ESM (Railway)
+├── backend/                                   # Express 5 ESM (Railway)
 │   └── src/
-│       ├── app.js                            # boot only — assemble app, mount routes, listen
-│       ├── config/
-│       │   ├── env.js                        # validates process.env once at boot
-│       │   └── db.js                         # mongoose.connect with TLS
-│       ├── middleware/
-│       │   ├── auth.js                       # requireAuth — Bearer token → req.user
-│       │   ├── errorHandler.js               # central { status, message } shaper
-│       │   ├── validate.js                   # validate(zodSchema) → req.validated
-│       │   └── rateLimit.js                  # named limiters (login, token, …)
+│       ├── app.js                             # boot only — assemble app, mount routes, listen
+│       ├── config/                            # env.js (validates env at boot), db.js (mongoose)
+│       ├── middleware/                        # auth, validate (Zod), errorHandler, rateLimit
 │       ├── modules/
-│       │   ├── users/
-│       │   │   ├── users.routes.js           # limiter → validate → [requireAuth] → controller
-│       │   │   ├── users.controller.js       # thin: req.validated → service → res
-│       │   │   ├── users.service.js          # business logic
-│       │   │   ├── users.validation.js       # Zod schemas
-│       │   │   ├── users.model.js            # Mongoose User
-│       │   │   └── meeting.model.js          # Mongoose Meeting (history records)
-│       │   └── meet/
-│       │       ├── meet.routes.js
-│       │       ├── meet.controller.js
-│       │       ├── meet.service.js           # generateLiveKitToken
-│       │       └── meet.validation.js
-│       └── utils/
-│           ├── AppError.js                   # throwable error with HTTP status
-│           ├── tokens.js                     # session-token helpers (40-hex, 7-day TTL)
-│           └── logger.js
+│       │   ├── users/                         # routes → controller → service → model
+│       │   └── meet/                          # /get-token (LiveKit JWT issuer)
+│       └── utils/                             # AppError, tokens, logger
 │
-├── CLAUDE.md                                 # repo-wide guide for Claude Code
-├── frontend/CLAUDE.md                        # frontend-specific guide
-├── backend/CLAUDE.md                         # backend-specific guide
+├── CLAUDE.md / frontend/CLAUDE.md / backend/CLAUDE.md
 └── README.md
 ```
 
-> The Vercel project config (`vercel.json`) is intentionally git-ignored — it lives in the Vercel project settings rather than in the repo.
+> `vercel.json` is intentionally git-ignored — Vercel project settings hold the build config, not the repo.
 
 ---
 
-## Installation & Setup
+## Local setup
 
 ### Prerequisites
 
-- Node.js 18+
-- npm 9+
-- A [MongoDB Atlas](https://www.mongodb.com/atlas) cluster (free tier works)
+- Node.js **18+** and npm **9+**
+- A [MongoDB Atlas](https://www.mongodb.com/atlas) cluster (the free tier is enough)
+- A [LiveKit Cloud](https://livekit.io) project for API key, secret, and WebSocket URL
 
-### 1. Clone the repository
+### 1. Clone
 
 ```bash
 git clone https://github.com/SidVaidya2005/Zoom-Clone.git
 cd Zoom-Clone
 ```
 
-### 2. Backend setup
+### 2. Backend
 
 ```bash
 cd backend
+cp .env.example .env       # then fill in values (see "Environment variables" below)
 npm install
+npm run dev                # nodemon on :8000
 ```
 
-Create a `.env` file in the `backend/` directory:
+### 3. Frontend
 
-```env
-MONGO_URL=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/<dbname>?retryWrites=true&w=majority
-PORT=8000
-LIVEKIT_API_KEY=<your-livekit-api-key>
-LIVEKIT_API_SECRET=<your-livekit-api-secret>
-LIVEKIT_URL=wss://<your-livekit-project>.livekit.cloud
-```
-
-> **MongoDB Atlas**: Go to **Network Access** and add `0.0.0.0/0` (or your machine's IP) to allow connections.
-> **LiveKit**: Create a free project at [livekit.io](https://livekit.io) to get your API key, secret, and WebSocket URL.
-
-Start the backend:
+In a second terminal:
 
 ```bash
-npm run dev        # Development (nodemon hot reload)
-# or
-npm start          # Production
-```
-
-### 3. Frontend setup
-
-```bash
-cd ../frontend
+cd frontend
+cp .env.example .env       # then fill in values
 npm install
+npm start                  # CRA dev server on :3000
 ```
 
-Create a `.env` file in the `frontend/` directory:
-
-```env
-REACT_APP_SERVER_URL=http://localhost:8000
-REACT_APP_LIVEKIT_URL=wss://<your-livekit-project>.livekit.cloud
-```
-
-> `REACT_APP_SERVER_URL` defaults to `http://localhost:8000` if omitted. `REACT_APP_LIVEKIT_URL` is required — the app will not connect to video calls without it.
-
-Start the frontend:
-
-```bash
-npm start          # Dev server on http://localhost:3000
-```
-
-### 4. Development checks
-
-Run these from the repository root:
-
-```bash
-# Backend
-(cd backend && npm run lint)
-(cd backend && npm run lint:fix)
-(cd backend && npm run format:check)
-(cd backend && npm run format)
-
-# Frontend
-(cd frontend && npm run lint)
-(cd frontend && npm run lint:fix)
-(cd frontend && npm run format:check)
-(cd frontend && npm run format)
-(cd frontend && npm run build)
-```
+Open <http://localhost:3000>.
 
 ---
 
-## Usage
-
-| Route           | Description                                   | Auth Required |
-| --------------- | --------------------------------------------- | ------------- |
-| `/`             | Landing page                                  | No            |
-| `/auth`         | Register or login                             | No            |
-| `/home`         | Enter a meeting code to join or start a call  | Yes           |
-| `/guest`        | Join a meeting as a guest (no account needed) | No            |
-| `/:meetingCode` | Live video call room                          | No            |
-| `/history`      | View all past meetings                        | Yes           |
-
-### Joining a call
-
-1. Open the app and click **[JOIN AS GUEST]** or log in.
-2. Enter any meeting code (e.g., `my-team-standup`).
-3. On the lobby screen, preview your camera, toggle camera/mic, enter your name.
-4. Click **[JOIN]** to enter the call.
-5. Share the same URL with others — they join instantly.
-
----
-
-## Environment Variables
+## Environment variables
 
 ### Backend (`backend/.env`)
 
-| Variable             | Required | Description                                |
-| -------------------- | -------- | ------------------------------------------ |
-| `MONGO_URL`          | Yes      | MongoDB Atlas connection string            |
-| `LIVEKIT_API_KEY`    | Yes      | LiveKit project API key                    |
-| `LIVEKIT_API_SECRET` | Yes      | LiveKit project API secret                 |
-| `LIVEKIT_URL`        | Yes      | LiveKit server WebSocket URL (`wss://...`) |
-| `PORT`               | No       | Server port (default: `8000`)              |
+| Variable             | Required | Description                                  |
+| -------------------- | -------- | -------------------------------------------- |
+| `MONGO_URL`          | Yes      | MongoDB Atlas connection string              |
+| `LIVEKIT_API_KEY`    | Yes      | LiveKit project API key                      |
+| `LIVEKIT_API_SECRET` | Yes      | LiveKit project API secret                   |
+| `LIVEKIT_URL`        | Yes      | LiveKit server WebSocket URL (`wss://...`)   |
+| `PORT`               | No       | Server port (default: `8000`)                |
 
-### Frontend (`frontend/.env` or Vercel env)
+> In MongoDB Atlas, allow your IP under **Network Access** (or `0.0.0.0/0` for development).
+
+### Frontend (`frontend/.env`)
 
 | Variable                | Required | Description                                         |
 | ----------------------- | -------- | --------------------------------------------------- |
 | `REACT_APP_SERVER_URL`  | No       | Backend base URL (default: `http://localhost:8000`) |
 | `REACT_APP_LIVEKIT_URL` | Yes      | LiveKit server WebSocket URL (`wss://...`)          |
 
+> `REACT_APP_LIVEKIT_URL` has **no fallback**. If it's missing, the call connect step fails silently with a generic error. `LIVEKIT_URL` (backend) and `REACT_APP_LIVEKIT_URL` (frontend) must point at the same LiveKit project.
+
 ---
 
-## API Endpoints
+## Available scripts
 
-All routes are rate limited to **100 requests per 15 minutes** per IP.
+Run scripts from inside each package — there is no root-level task runner.
 
-**`/api/v1/users`** — Auth & history:
+### Frontend
 
-| Method | Endpoint            | Auth         | Description                              |
-| ------ | ------------------- | ------------ | ---------------------------------------- |
-| `POST` | `/register`         | No           | Create a new account                     |
-| `POST` | `/login`            | No           | Authenticate and receive a session token |
-| `GET`  | `/verify`           | Bearer token | Validate an existing session token       |
-| `POST` | `/add_to_activity`  | Bearer token | Log a meeting to history                 |
-| `GET`  | `/get_all_activity` | Bearer token | Fetch all meetings for the current user  |
-
-**`/api/v1/meet`** — LiveKit:
-
-| Method | Endpoint     | Auth | Query params       | Description                                        |
-| ------ | ------------ | ---- | ------------------ | -------------------------------------------------- |
-| `GET`  | `/get-token` | No   | `room`, `username` | Issue a short-lived LiveKit JWT for joining a room |
-
-### Request/Response Examples
-
-**POST `/register`**
-
-```json
-// Request
-{ "name": "Jane Doe", "username": "janedoe", "password": "secret123" }
-
-// Response 201
-{ "message": "User registered" }
+```bash
+npm start             # CRA dev server on http://localhost:3000
+npm run build         # production build → frontend/build
+npm test              # CRA/Jest in watch mode
+npm run lint          # eslint src/**/*.{js,jsx}
+npm run lint:fix      # eslint --fix
+npm run format:check  # prettier check
+npm run format        # prettier write
 ```
 
-**POST `/login`**
+### Backend
+
+```bash
+npm run dev           # nodemon on PORT (default 8000)
+npm start             # production node
+npm run lint          # eslint src/**/*.js
+npm run lint:fix      # eslint --fix
+npm run format:check  # prettier check
+npm run format        # prettier write
+```
+
+---
+
+## API reference
+
+All routes are rate limited to **100 requests / 15 minutes** per IP, plus stricter named limiters on `/login` and `/get-token`.
+
+### `/api/v1/users` — auth & history
+
+| Method | Endpoint            | Auth   | Description                              |
+| ------ | ------------------- | ------ | ---------------------------------------- |
+| `POST` | `/register`         | Public | Create a new account                     |
+| `POST` | `/login`            | Public | Authenticate and receive a session token |
+| `GET`  | `/verify`           | Bearer | Validate an existing session token       |
+| `POST` | `/add_to_activity`  | Bearer | Log a meeting to history                 |
+| `GET`  | `/get_all_activity` | Bearer | Fetch all meetings for the current user  |
+
+### `/api/v1/meet` — LiveKit
+
+| Method | Endpoint     | Auth   | Query params       | Description                                        |
+| ------ | ------------ | ------ | ------------------ | -------------------------------------------------- |
+| `GET`  | `/get-token` | Public | `room`, `username` | Issue a short-lived LiveKit JWT for joining a room |
+
+### Selected request / response examples
+
+**`POST /api/v1/users/login`**
 
 ```json
 // Request
@@ -368,40 +332,24 @@ All routes are rate limited to **100 requests per 15 minutes** per IP.
 { "token": "a3f9c2d1..." }
 ```
 
-**GET `/verify`**
-
-```json
-// Response 200
-{ "message": "Valid" }
-```
-
-**POST `/add_to_activity`**
-
-```json
-// Request
-{ "meetingCode": "my-team-standup" }
-
-// Response 201
-{ "message": "Added code to history" }
-```
-
-**GET `/get_all_activity`**
+**`GET /api/v1/users/get_all_activity`** (with `Authorization: Bearer <token>`)
 
 ```json
 // Response 200
 [
-  { "meetingCode": "my-team-standup", "date": "2026-03-30T10:00:00.000Z" },
-  { "meetingCode": "design-review", "date": "2026-03-28T15:30:00.000Z" }
+  { "meetingCode": "design-review",  "date": "2026-05-12T10:00:00.000Z" },
+  { "meetingCode": "team-sync",      "date": "2026-05-10T15:30:00.000Z" },
+  { "meetingCode": "product-demo",   "date": "2026-05-08T09:15:00.000Z" }
 ]
 ```
 
-**GET `/get-token?room=my-team-standup&username=Jane`**
+**`GET /api/v1/meet/get-token?room=design-review&username=Jane`**
 
 ```json
 // Response 200
 {
   "token": "eyJhbGciOiJIUzI1NiIs...",
-  "url": "wss://your-project.livekit.cloud"
+  "url":   "wss://your-project.livekit.cloud"
 }
 ```
 
@@ -409,66 +357,15 @@ All routes are rate limited to **100 requests per 15 minutes** per IP.
 
 ## Deployment
 
-### Frontend (Vercel)
-
-The frontend is deployed as a static React build on Vercel. The `vercel.json` config (kept outside the repo, in Vercel project settings) points the build at the `frontend/` package:
-
-```json
-{
-  "buildCommand": "cd frontend && npm install && npm run build",
-  "outputDirectory": "frontend/build",
-  "installCommand": "echo 'skip root install'"
-}
-```
-
-Set the following environment variables in your Vercel project settings:
-
-- `REACT_APP_SERVER_URL` — your backend URL
-- `REACT_APP_LIVEKIT_URL` — your LiveKit server WebSocket URL (`wss://...`)
-
-### Backend (Railway / any Node.js host)
-
-The backend is a standard Express REST API with no persistent WebSocket connections — it is fully **serverless-compatible** and can be deployed anywhere Node.js runs.
-
-Recommended hosts: **Railway**, **Render**, **Fly.io**, **Vercel Functions**, **AWS Lambda**.
-
-```bash
-# Production start command
-npm start
-# or with PM2
-npm run prod
-```
-
----
-
-## Contributing
-
-Contributions are welcome! To get started:
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/your-feature`
-3. Commit your changes: `git commit -m "feat: add your feature"`
-4. Push to your branch: `git push origin feature/your-feature`
-5. Open a pull request
-
-Please follow the existing frontend style: warm near-black surfaces, red signal accents, JetBrains Mono typography, grid backdrops, compact uppercase controls, and MUI components themed through `shared/theme/goldTheme.js`.
-
----
-
-## License
-
-This project is licensed under the **ISC License**.
+- **Frontend (Vercel)** — static CRA build. The `vercel.json` config lives in the Vercel project settings and points the build at the `frontend/` package. Set `REACT_APP_SERVER_URL` and `REACT_APP_LIVEKIT_URL` in the project's environment variables.
+- **Backend (Railway / any Node host)** — standard Express REST API with no persistent WebSockets. Production start is `npm start`. Works on Railway, Render, Fly.io, Vercel Functions, or AWS Lambda.
 
 ---
 
 ## Author
 
-**Siddarth Vaidya**
-
-- GitHub: [@SidVaidya2005](https://github.com/SidVaidya2005)
-
----
+**Siddarth Vaidya** — [github.com/SidVaidya2005](https://github.com/SidVaidya2005)
 
 <div align="center">
-  <sub>Built with React, Express, and LiveKit</sub>
+  <sub>Built with React, Express, MongoDB, and LiveKit.</sub>
 </div>
