@@ -1,6 +1,6 @@
 import { logger } from "../utils/logger.js";
 
-export function errorHandler(err, req, res, next) {
+export function errorHandler(err, req, res, _next) {
   const status = Number.isInteger(err?.status) ? err.status : 500;
   const message = err?.message || "Internal server error";
 
