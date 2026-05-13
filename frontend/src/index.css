@@ -6,7 +6,8 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   background-color: var(--bg-1);
   color: var(--fg-1);
   font-family: var(--font-mono);
@@ -24,7 +25,8 @@ html, body {
   z-index: 2;
 }
 
-code, pre {
+code,
+pre {
   font-family: var(--font-mono);
 }
 

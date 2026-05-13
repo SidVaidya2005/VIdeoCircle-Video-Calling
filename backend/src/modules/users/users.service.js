@@ -2,7 +2,11 @@ import bcrypt from "bcrypt";
 import { User } from "./users.model.js";
 import { Meeting } from "./meeting.model.js";
 import { AppError } from "../../utils/AppError.js";
-import { generateSessionToken, sessionExpiry, isExpired } from "../../utils/tokens.js";
+import {
+  generateSessionToken,
+  sessionExpiry,
+  isExpired,
+} from "../../utils/tokens.js";
 
 const BCRYPT_ROUNDS = 10;
 

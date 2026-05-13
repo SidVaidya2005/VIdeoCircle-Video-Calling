@@ -26,7 +26,13 @@ const router = Router();
 router.post("/register", registerLimiter, validate(registerSchema), register);
 router.post("/login", loginLimiter, validate(loginSchema), login);
 router.get("/verify", verifyLimiter, requireAuth, verify);
-router.post("/add_to_activity", historyLimiter, requireAuth, validate(addHistorySchema), addHistory);
+router.post(
+  "/add_to_activity",
+  historyLimiter,
+  requireAuth,
+  validate(addHistorySchema),
+  addHistory
+);
 router.get("/get_all_activity", historyLimiter, requireAuth, getHistory);
 
 export default router;

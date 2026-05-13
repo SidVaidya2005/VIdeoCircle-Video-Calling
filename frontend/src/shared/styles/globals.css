@@ -12,7 +12,7 @@
 
 a,
 button,
-[role='button'] {
+[role="button"] {
   touch-action: manipulation;
 }
 
@@ -54,7 +54,11 @@ select {
     linear-gradient(var(--grid-line-minor) 1px, transparent 1px),
     linear-gradient(-90deg, var(--grid-line-major) 1px, transparent 1px),
     linear-gradient(var(--grid-line-major) 1px, transparent 1px);
-  background-size: 10px 10px, 10px 10px, 100px 100px, 100px 100px;
+  background-size:
+    10px 10px,
+    10px 10px,
+    100px 100px,
+    100px 100px;
 }
 
 /* Fixed-position variant so the grid stays put on scroll pages */
@@ -151,7 +155,7 @@ select {
 }
 
 .overline--dot::before {
-  content: '';
+  content: "";
   display: inline-block;
   width: 5px;
   height: 5px;
@@ -186,12 +190,16 @@ select {
   justify-content: center;
   gap: 8px;
   /* Asymmetric: snap on, relax off */
-  transition: background-color 0.25s ease-in-out, color 0.25s ease-in-out;
+  transition:
+    background-color 0.25s ease-in-out,
+    color 0.25s ease-in-out;
   user-select: none;
 }
 
 .btn:hover {
-  transition: background-color 0.05s ease-out, color 0.05s ease-out;
+  transition:
+    background-color 0.05s ease-out,
+    color 0.05s ease-out;
 }
 
 .btn:focus-visible {
@@ -269,7 +277,9 @@ select {
   cursor: pointer;
   background: rgba(255, 255, 255, 0.05);
   color: var(--fg-1);
-  transition: background-color 0.25s ease-in-out, color 0.25s ease-in-out;
+  transition:
+    background-color 0.25s ease-in-out,
+    color 0.25s ease-in-out;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -440,7 +450,8 @@ select {
   height: 26px;
   background: var(--red-1);
   border-radius: 3px;
-  animation: heroStagger 1800ms cubic-bezier(0.83, 0, 0.17, 1) infinite alternate;
+  animation: heroStagger 1800ms cubic-bezier(0.83, 0, 0.17, 1) infinite
+    alternate;
   will-change: transform;
 }
 
@@ -466,7 +477,9 @@ select {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  transition: border-color 0.2s ease, background-color 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
   cursor: default;
 }
 
@@ -487,7 +500,7 @@ select {
 }
 
 .listCard__title::before {
-  content: '';
+  content: "";
   display: inline-block;
   width: 6px;
   height: 6px;

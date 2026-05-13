@@ -58,17 +58,17 @@ VideoCircle is a full-stack video conferencing application that lets users host 
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| **Frontend** | React 18, React Router v6, Material-UI v5 |
-| **Video/Audio** | LiveKit Cloud (SFU), `@livekit/components-react`, `livekit-client` |
-| **HTTP Client** | Axios |
-| **Backend** | Node.js, Express 5, `livekit-server-sdk` |
-| **Database** | MongoDB Atlas (Mongoose ODM) |
-| **Authentication** | Custom token (crypto hex), bcrypt (10 rounds) |
-| **Process Manager** | PM2 (production), Nodemon (development) |
-| **Frontend Hosting** | Vercel |
-| **Backend Hosting** | Railway (serverless-compatible) |
+| Layer                | Technology                                                         |
+| -------------------- | ------------------------------------------------------------------ |
+| **Frontend**         | React 18, React Router v6, Material-UI v5                          |
+| **Video/Audio**      | LiveKit Cloud (SFU), `@livekit/components-react`, `livekit-client` |
+| **HTTP Client**      | Axios                                                              |
+| **Backend**          | Node.js, Express 5, `livekit-server-sdk`                           |
+| **Database**         | MongoDB Atlas (Mongoose ODM)                                       |
+| **Authentication**   | Custom token (crypto hex), bcrypt (10 rounds)                      |
+| **Process Manager**  | PM2 (production), Nodemon (development)                            |
+| **Frontend Hosting** | Vercel                                                             |
+| **Backend Hosting**  | Railway (serverless-compatible)                                    |
 
 ---
 
@@ -267,14 +267,14 @@ npm start          # Dev server on http://localhost:3000
 
 ## Usage
 
-| Route | Description | Auth Required |
-|---|---|---|
-| `/` | Landing page | No |
-| `/auth` | Register or login | No |
-| `/home` | Enter a meeting code to join or start a call | Yes |
-| `/guest` | Join a meeting as a guest (no account needed) | No |
-| `/:meetingCode` | Live video call room | No |
-| `/history` | View all past meetings | Yes |
+| Route           | Description                                   | Auth Required |
+| --------------- | --------------------------------------------- | ------------- |
+| `/`             | Landing page                                  | No            |
+| `/auth`         | Register or login                             | No            |
+| `/home`         | Enter a meeting code to join or start a call  | Yes           |
+| `/guest`        | Join a meeting as a guest (no account needed) | No            |
+| `/:meetingCode` | Live video call room                          | No            |
+| `/history`      | View all past meetings                        | Yes           |
 
 ### Joining a call
 
@@ -290,20 +290,20 @@ npm start          # Dev server on http://localhost:3000
 
 ### Backend (`backend/.env`)
 
-| Variable | Required | Description |
-|---|---|---|
-| `MONGO_URL` | Yes | MongoDB Atlas connection string |
-| `LIVEKIT_API_KEY` | Yes | LiveKit project API key |
-| `LIVEKIT_API_SECRET` | Yes | LiveKit project API secret |
-| `LIVEKIT_URL` | Yes | LiveKit server WebSocket URL (`wss://...`) |
-| `PORT` | No | Server port (default: `8000`) |
+| Variable             | Required | Description                                |
+| -------------------- | -------- | ------------------------------------------ |
+| `MONGO_URL`          | Yes      | MongoDB Atlas connection string            |
+| `LIVEKIT_API_KEY`    | Yes      | LiveKit project API key                    |
+| `LIVEKIT_API_SECRET` | Yes      | LiveKit project API secret                 |
+| `LIVEKIT_URL`        | Yes      | LiveKit server WebSocket URL (`wss://...`) |
+| `PORT`               | No       | Server port (default: `8000`)              |
 
 ### Frontend (`frontend/.env` or Vercel env)
 
-| Variable | Required | Description |
-|---|---|---|
-| `REACT_APP_SERVER_URL` | No | Backend base URL (default: `http://localhost:8000`) |
-| `REACT_APP_LIVEKIT_URL` | Yes | LiveKit server WebSocket URL (`wss://...`) |
+| Variable                | Required | Description                                         |
+| ----------------------- | -------- | --------------------------------------------------- |
+| `REACT_APP_SERVER_URL`  | No       | Backend base URL (default: `http://localhost:8000`) |
+| `REACT_APP_LIVEKIT_URL` | Yes      | LiveKit server WebSocket URL (`wss://...`)          |
 
 ---
 
@@ -313,23 +313,24 @@ All routes are rate limited to **100 requests per 15 minutes** per IP.
 
 **`/api/v1/users`** — Auth & history:
 
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| `POST` | `/register` | No | Create a new account |
-| `POST` | `/login` | No | Authenticate and receive a session token |
-| `GET` | `/verify` | Bearer token | Validate an existing session token |
-| `POST` | `/add_to_activity` | Bearer token | Log a meeting to history |
-| `GET` | `/get_all_activity` | Bearer token | Fetch all meetings for the current user |
+| Method | Endpoint            | Auth         | Description                              |
+| ------ | ------------------- | ------------ | ---------------------------------------- |
+| `POST` | `/register`         | No           | Create a new account                     |
+| `POST` | `/login`            | No           | Authenticate and receive a session token |
+| `GET`  | `/verify`           | Bearer token | Validate an existing session token       |
+| `POST` | `/add_to_activity`  | Bearer token | Log a meeting to history                 |
+| `GET`  | `/get_all_activity` | Bearer token | Fetch all meetings for the current user  |
 
 **`/api/v1/meet`** — LiveKit:
 
-| Method | Endpoint | Auth | Query params | Description |
-|---|---|---|---|---|
-| `GET` | `/get-token` | No | `room`, `username` | Issue a short-lived LiveKit JWT for joining a room |
+| Method | Endpoint     | Auth | Query params       | Description                                        |
+| ------ | ------------ | ---- | ------------------ | -------------------------------------------------- |
+| `GET`  | `/get-token` | No   | `room`, `username` | Issue a short-lived LiveKit JWT for joining a room |
 
 ### Request/Response Examples
 
 **POST `/register`**
+
 ```json
 // Request
 { "name": "Jane Doe", "username": "janedoe", "password": "secret123" }
@@ -339,6 +340,7 @@ All routes are rate limited to **100 requests per 15 minutes** per IP.
 ```
 
 **POST `/login`**
+
 ```json
 // Request
 { "username": "janedoe", "password": "secret123" }
@@ -348,6 +350,7 @@ All routes are rate limited to **100 requests per 15 minutes** per IP.
 ```
 
 **GET `/get_all_activity`**
+
 ```json
 // Response 200
 [
@@ -373,6 +376,7 @@ The frontend is deployed as a static React build on Vercel. The `vercel.json` co
 ```
 
 Set the following environment variables in your Vercel project settings:
+
 - `REACT_APP_SERVER_URL` — your backend URL
 - `REACT_APP_LIVEKIT_URL` — your LiveKit server WebSocket URL (`wss://...`)
 
@@ -414,6 +418,7 @@ This project is licensed under the **ISC License**.
 ## Author
 
 **Siddarth Vaidya**
+
 - GitHub: [@SidVaidya2005](https://github.com/SidVaidya2005)
 
 ---

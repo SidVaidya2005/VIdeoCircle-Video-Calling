@@ -1,0 +1,16 @@
+node_modules
+build
+dist
+coverage
+.cache
+.vercel
+.history
+tmp
+temp
+
+package-lock.json
+*.min.js
+*.min.css
+*.lock
+
+.DS_Store

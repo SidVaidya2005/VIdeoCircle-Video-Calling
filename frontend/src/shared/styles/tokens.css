@@ -29,8 +29,8 @@
   --red-6: #322523;
 
   /* Secondary accents from the kit (used sparingly) */
-  --cyan-1: #4BFFFD;
-  --green-1: #00FF5D;
+  --cyan-1: #4bfffd;
+  --green-1: #00ff5d;
   --yellow-1: #ffcc2a;
 
   /* --- Semantic backgrounds (ascending elevation) --- */
@@ -52,11 +52,11 @@
   --accent-glow: 0 0 24px rgba(255, 75, 75, 0.5);
 
   /* --- Radii: never razor-sharp --- */
-  --radius-xs: 0.25rem;  /* inputs, small chips */
-  --radius-sm: 0.4rem;   /* buttons */
-  --radius-md: 0.6rem;   /* ease/chip buttons */
-  --radius-lg: 1rem;     /* cards, panels */
-  --radius-xl: 1.25rem;  /* hero panels */
+  --radius-xs: 0.25rem; /* inputs, small chips */
+  --radius-sm: 0.4rem; /* buttons */
+  --radius-md: 0.6rem; /* ease/chip buttons */
+  --radius-lg: 1rem; /* cards, panels */
+  --radius-xl: 1.25rem; /* hero panels */
   --radius-pill: 999px;
 
   /* --- Spacing --- */
@@ -70,7 +70,7 @@
   --space-8: 4rem;
 
   /* --- Type families: mono only --- */
-  --font-mono: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, monospace;
+  --font-mono: "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
   --font-system: var(--font-mono);
   /* legacy aliases — old code may still reference these */
   --font-display: var(--font-mono);
@@ -94,7 +94,7 @@
 
   --tracking-tight: -0.01em;
   --tracking-normal: 0;
-  --tracking-wide: 0.06em;   /* overlines */
+  --tracking-wide: 0.06em; /* overlines */
   --tracking-wider: 0.12em;
 
   /* --- Borders / strokes --- */

@@ -1,5 +1,5 @@
-import App from './app/App';
+import App from "./app/App";
 
-test('App is exported as a component', () => {
-  expect(typeof App).toBe('function');
+test("App is exported as a component", () => {
+  expect(typeof App).toBe("function");
 });

@@ -23,7 +23,8 @@ cp frontend/.env.example frontend/.env  # fill in REACT_APP_LIVEKIT_URL
 ```
 
 Required services:
-- **MongoDB Atlas** — free tier; whitelist your IP under *Network Access*.
+
+- **MongoDB Atlas** — free tier; whitelist your IP under _Network Access_.
 - **LiveKit Cloud** — free project at livekit.io for `LIVEKIT_API_KEY` / `_SECRET` / `_URL`.
 
 `LIVEKIT_URL` (backend) and `REACT_APP_LIVEKIT_URL` (frontend) **must point at the same project** — mismatched values fail silently after the JWT validates.
@@ -89,6 +90,7 @@ Routes wire `limiter → validate → [requireAuth] → controller`. Controllers
 ### Reading env vars
 
 Never read `process.env.*` outside the single source of truth:
+
 - Backend: `backend/src/config/env.js`
 - Frontend: `frontend/src/shared/lib/env.js`
 
@@ -96,15 +98,15 @@ Add new vars to **both** the env.js and the matching `.env.example` so future co
 
 ## 6. Quick Reference — Commands
 
-| Command | Where | Effect |
-|---|---|---|
-| `npm install` | `frontend/` or `backend/` | Install deps |
-| `npm run dev` | `backend/` | Nodemon hot reload on `:8000` |
-| `npm start` | `backend/` | Production-style `node src/app.js` |
-| `npm run prod` | `backend/` | PM2 (host must have it globally) |
-| `npm start` | `frontend/` | CRA dev server on `:3000` |
-| `npm run build` | `frontend/` | Production build → `frontend/build/` |
-| `npm test -- <pattern>` | `frontend/` | Single test file (CRA pass-through to Jest) |
+| Command                 | Where                     | Effect                                      |
+| ----------------------- | ------------------------- | ------------------------------------------- |
+| `npm install`           | `frontend/` or `backend/` | Install deps                                |
+| `npm run dev`           | `backend/`                | Nodemon hot reload on `:8000`               |
+| `npm start`             | `backend/`                | Production-style `node src/app.js`          |
+| `npm run prod`          | `backend/`                | PM2 (host must have it globally)            |
+| `npm start`             | `frontend/`               | CRA dev server on `:3000`                   |
+| `npm run build`         | `frontend/`               | Production build → `frontend/build/`        |
+| `npm test -- <pattern>` | `frontend/`               | Single test file (CRA pass-through to Jest) |
 
 There is no root-level command runner, no lint script, and no test suite in active use (CRA's defaults are present but unused).
 
@@ -139,7 +141,7 @@ If any step fails, fix before opening the PR.
 
 ## 10. Common Gotchas
 
-- **`/:meetingCode` is a catch-all**. Any new top-level route must go *above* it in `app/routes.jsx` or the router will treat the path as a meeting code.
+- **`/:meetingCode` is a catch-all**. Any new top-level route must go _above_ it in `app/routes.jsx` or the router will treat the path as a meeting code.
 - **Frontend will silently fail on missing `REACT_APP_LIVEKIT_URL`** — there is no fallback. Backend will fail loudly on any missing var.
 - **In-call chat is LiveKit's data channel**, not a separate WebSocket. Don't introduce Socket.IO.
 - **`getUserMedia` collisions**: the lobby preview holds its own stream; it must stop all tracks before LiveKit re-acquires the camera. Don't keep a reference past `onJoin`.

@@ -1,10 +1,10 @@
-import { Route, Routes } from 'react-router-dom';
-import LandingPage from '../features/landing/pages/LandingPage';
-import AuthPage from '../features/auth/pages/AuthPage';
-import GuestLandingPage from '../features/auth/pages/GuestLandingPage';
-import HomePage from '../features/home/pages/HomePage';
-import HistoryPage from '../features/history/pages/HistoryPage';
-import MeetPage from '../features/meet/pages/MeetPage';
+import { Route, Routes } from "react-router-dom";
+import LandingPage from "../features/landing/pages/LandingPage";
+import AuthPage from "../features/auth/pages/AuthPage";
+import GuestLandingPage from "../features/auth/pages/GuestLandingPage";
+import HomePage from "../features/home/pages/HomePage";
+import HistoryPage from "../features/history/pages/HistoryPage";
+import MeetPage from "../features/meet/pages/MeetPage";
 
 export default function AppRoutes() {
   return (
