@@ -38,6 +38,10 @@ logs/
 *.swo
 .history/
 
+# OS
+.DS_Store
+Thumbs.db
+
 # Caches & scratch
 .cache/
 .eslintcache
@@ -46,3 +50,6 @@ temp/
 
 # Packaging artifacts
 *.tgz
+
+# Keep tracked directories
+!frontend/public/screenshots/

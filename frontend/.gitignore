@@ -7,3 +7,12 @@
 # Yarn Plug'n'Play
 /.pnp
 .pnp.js
+
+# Environment (inherited from root, but explicit here)
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Keep tracked directories
+!public/screenshots/
