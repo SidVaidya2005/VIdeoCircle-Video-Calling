@@ -1,45 +1,67 @@
+/* ============================================================
+   VideoCircle — Global styles
+   Shared layout primitives, nav bar, buttons, grid backdrop, etc.
+   Visual language is the Anime.js handoff kit (mono-only, warm
+   near-black, red signal accent).
+   ============================================================ */
+
 /* Mobile touch globals */
 * {
-  /* Subtle gold flash instead of the default grey smear on tap */
-  -webkit-tap-highlight-color: rgba(212, 160, 23, 0.1);
+  -webkit-tap-highlight-color: rgba(255, 75, 75, 0.12);
 }
 
-/* Removes 300ms tap delay on interactive elements */
-a, button, [role="button"], .navLinkBracket, .startBtn,
-.authSubmitBtn, .authTab, .lobbyMediaBtn {
+a,
+button,
+[role='button'] {
   touch-action: manipulation;
 }
 
-/* iOS Safari input zoom prevention — font-size must be >= 16px */
-input, textarea, select {
+/* iOS Safari input zoom prevention */
+input,
+textarea,
+select {
   font-size: max(16px, 1em);
 }
 
-/* ================================================================
-   SHARED PAGE LAYOUT
-   All full-page routes share these three building blocks.
-   ================================================================ */
+/* ============================================================
+   PAGE LAYOUT PRIMITIVES
+   ============================================================ */
 
-/* ASCII canvas background — position: absolute for fixed-height pages */
-.pageCanvas {
+.page {
+  position: relative;
+  width: 100vw;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  background: var(--bg-1);
+}
+
+.page--fixed {
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+/* Kit's signature double-layer grid backdrop. */
+.gridBackdrop {
   position: absolute;
   inset: 0;
   z-index: 1;
   pointer-events: none;
-}
-
-/* Vignette overlay shared across all pages */
-.pageOverlay {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
+  opacity: 0.6;
   background:
-    radial-gradient(ellipse at 50% 55%, rgba(8, 8, 8, 0.08) 0%, rgba(8, 8, 8, 0.46) 100%),
-    linear-gradient(to bottom, rgba(8,8,8,0.36) 0%, transparent 18%, transparent 76%, rgba(8,8,8,0.41) 100%);
-  pointer-events: none;
+    linear-gradient(-90deg, var(--grid-line-minor) 1px, transparent 1px),
+    linear-gradient(var(--grid-line-minor) 1px, transparent 1px),
+    linear-gradient(-90deg, var(--grid-line-major) 1px, transparent 1px),
+    linear-gradient(var(--grid-line-major) 1px, transparent 1px);
+  background-size: 10px 10px, 10px 10px, 100px 100px, 100px 100px;
 }
 
-/* Content wrapper that sits above canvas + overlay */
+/* Fixed-position variant so the grid stays put on scroll pages */
+.gridBackdrop--fixed {
+  position: fixed;
+}
+
 .pageContent {
   position: relative;
   z-index: 10;
@@ -48,808 +70,514 @@ input, textarea, select {
   flex-direction: column;
 }
 
-/* ================================================================
-   SHARED TOP BAR & NAV
-   ================================================================ */
+/* ============================================================
+   BRAND WORDMARK
+   `video[•]circle` — the dot is the kit's signature gesture.
+   ============================================================ */
 
-.landingTopBar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.1rem 2rem;
-  border-bottom: 1px solid rgba(212, 160, 23, 0.12);
-}
-
-.bracketLabel {
+.brand {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 1px;
   font-family: var(--font-mono);
-  font-size: 0.72rem;
-  color: #D4A017;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.landingBrand {
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  color: rgba(212, 160, 23, 0.88);
-  letter-spacing: 0.06em;
-}
-
-.authTopLeft {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.landingTopRight {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-}
-
-.navLinkBracket {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  color: #D4A017;
-  letter-spacing: 0.1em;
-  cursor: pointer;
-  border: 1px solid rgba(212, 160, 23, 0.7);
-  padding: 0.3rem 0.65rem;
-  transition: all 0.18s ease;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--fg-1);
+  letter-spacing: -0.01em;
   user-select: none;
 }
 
-.navLinkBracket:hover {
-  color: #080808;
-  border-color: #D4A017;
-  background: #D4A017;
+.brand__dot {
+  display: inline-block;
+  width: 0.4em;
+  height: 0.4em;
+  background: var(--red-1);
+  margin: 0 0.18em 0.14em;
+  align-self: flex-end;
+  box-shadow: 0 0 18px rgba(255, 75, 75, 0.5);
 }
 
-.navLinkBracket:active {
-  transform: scale(0.94);
-  opacity: 0.8;
-  transition: all 0.1s ease;
+.brand__suffix {
+  font-size: 0.65em;
+  color: var(--fg-3);
+  margin-left: 0.7em;
+  letter-spacing: 0.08em;
+  font-weight: 400;
+  align-self: center;
 }
 
-/* ================================================================
-   LANDING PAGE
-   ================================================================ */
+/* ============================================================
+   NAV BAR (shared header used across pages)
+   ============================================================ */
 
-.landingPageContainer {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-  height: 100dvh;
-  overflow: hidden;
-  background: #080808;
-}
-
-.landingContent {
-  height: 100vh;
-  height: 100dvh;
-}
-
-/* ── Hero ── */
-.landingHero {
-  flex: 1;
+.topBar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
   display: flex;
-  flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  padding: 0.5rem 2rem 0;
-  position: relative;
-  gap: 2rem;
+  gap: var(--space-4);
+  padding: 14px 28px;
+  background: rgba(37, 36, 35, 0.82);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.heroScript {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-style: italic;
-  font-size: clamp(1.3rem, 2.2vw, 2rem);
-  color: rgba(212, 160, 23, 0.55);
-  margin-bottom: 0.4rem;
-  letter-spacing: -0.01em;
-  line-height: 1;
+.topBar__group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.topBar__group--right {
+  justify-content: flex-end;
+}
+
+/* ============================================================
+   OVERLINE / CAPTION
+   Wide-tracked SCREAMING CAPS — the kit's signature gesture.
+   ============================================================ */
+
+.overline {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+  font-weight: 400;
+}
+
+.overline--dot::before {
+  content: '';
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  background: var(--red-1);
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+/* ============================================================
+   BUTTONS
+   - .btn.primary   = white fill, dark text (the default CTA)
+   - .btn.ghost     = translucent fill, light text
+   - .btn.signal    = red fill, dark text (active / selected)
+   - .btn.nav       = ghost variant used in top bar links
+   ============================================================ */
+
+.btn {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 12px 22px;
+  border-radius: var(--radius-sm);
+  border: 0;
+  cursor: pointer;
+  background: transparent;
+  color: var(--fg-1);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  /* Asymmetric: snap on, relax off */
+  transition: background-color 0.25s ease-in-out, color 0.25s ease-in-out;
+  user-select: none;
+}
+
+.btn:hover {
+  transition: background-color 0.05s ease-out, color 0.05s ease-out;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--red-1);
+  outline-offset: 2px;
+}
+
+.btn.primary {
+  background: var(--white-1);
+  color: var(--bg-1);
+}
+
+.btn.primary:hover {
+  background: var(--white-2);
+}
+
+.btn.ghost {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--fg-1);
+}
+
+.btn.ghost:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.btn.signal {
+  background: var(--red-1);
+  color: var(--bg-1);
+}
+
+.btn.signal:hover {
+  background: var(--red-2);
+}
+
+.btn.nav {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  padding: 6px 10px;
+  border-radius: 4px;
+  color: var(--fg-2);
+  background: transparent;
+}
+
+.btn.nav:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--fg-1);
+}
+
+.btn.nav.primary {
+  color: var(--bg-1);
+  background: var(--white-1);
+}
+
+.btn.nav.primary:hover {
+  background: var(--white-2);
+}
+
+.btn[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   CHIPS (small toggles, e.g. ease buttons, media toggles)
+   ============================================================ */
+
+.chip {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  border: 0;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--fg-1);
+  transition: background-color 0.25s ease-in-out, color 0.25s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.chip:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transition: background-color 0.05s ease-out;
+}
+
+.chip.active {
+  background: var(--red-1);
+  color: var(--bg-1);
+}
+
+.chip[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   CARDS
+   ============================================================ */
+
+.card {
+  background: var(--bg-2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: border-color 0.25s ease;
+}
+
+.card:hover {
+  border-color: rgba(255, 75, 75, 0.5);
+}
+
+.card--signal {
+  border-color: var(--red-1);
+  box-shadow: inset 0 0 0 1px rgba(255, 75, 75, 0.3);
+}
+
+/* ============================================================
+   FORM CONTROLS (native input + textarea)
+   Dashed-underline inputs, kit-style. MUI inputs are themed
+   separately via MuiTextField overrides in the MUI theme.
+   ============================================================ */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.field__label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+
+.input {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  background: transparent;
+  color: var(--fg-1);
+  border: 0;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.3);
+  padding: 8px 4px;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.input:hover {
+  border-bottom-color: rgba(255, 255, 255, 0.5);
+}
+
+.input:focus {
+  border-bottom-color: var(--red-1);
+  outline: none;
+}
+
+.input::placeholder {
+  color: var(--fg-4);
+}
+
+/* ============================================================
+   HERO PATTERNS (used by Landing, Auth, Guest, Home)
+   ============================================================ */
+
+.heroOverline {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  color: var(--fg-3);
+  text-transform: uppercase;
+  margin-bottom: 22px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.heroOverline__dot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  background: var(--red-1);
+  vertical-align: middle;
 }
 
 .heroTitle {
-  display: flex;
-  flex-direction: column;
-  line-height: 0.88;
-  margin: 0;
-  padding: 0;
-}
-
-.heroLine {
-  font-family: 'Anton', 'Syne', sans-serif;
-  font-size: clamp(5.5rem, 19vw, 22vw);
-  font-weight: 400;
-  color: #D4A017;
-  text-transform: uppercase;
-  letter-spacing: -0.01em;
-  line-height: 0.88;
-  display: block;
-  text-shadow:
-    0 0 80px rgba(212, 160, 23, 0.25),
-    0 4px 40px rgba(0, 0, 0, 0.8);
-}
-
-.heroLeft {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.heroPreview {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.5rem;
-  flex: 1;
-  max-width: 44%;
-}
-
-.heroPreviewLabel {
   font-family: var(--font-mono);
-  font-size: 0.68rem;
-  color: rgba(212, 160, 23, 0.45);
-  letter-spacing: 0.1em;
-}
-
-.heroPreviewImgWrap {
-  position: relative;
-  display: block;
-  border: none;
-  transition: transform 0.08s ease-out, filter 0.2s;
-  transform-style: preserve-3d;
-  will-change: transform;
-  -webkit-mask-image: radial-gradient(ellipse 88% 82% at 50% 50%, black 48%, transparent 100%);
-  mask-image: radial-gradient(ellipse 88% 82% at 50% 50%, black 48%, transparent 100%);
-  filter:
-    brightness(0.78)
-    contrast(1.06)
-    saturate(0.72)
-    drop-shadow(0 40px 60px rgba(0, 0, 0, 0.95))
-    drop-shadow(0 0 80px rgba(8, 8, 8, 0.6));
-}
-
-.heroPreviewImgWrap::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(8, 8, 8, 0.55) 100%),
-    linear-gradient(to bottom, rgba(8,8,8,0.25) 0%, transparent 30%, transparent 70%, rgba(8,8,8,0.4) 100%),
-    linear-gradient(to right, rgba(8,8,8,0.3) 0%, transparent 20%, transparent 80%, rgba(8,8,8,0.3) 100%);
-  z-index: 1;
-  pointer-events: none;
-}
-
-.heroPreviewImgWrap::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse at 50% 100%, rgba(212, 160, 23, 0.04) 0%, transparent 70%);
-  z-index: 2;
-  pointer-events: none;
-}
-
-.heroPreviewImgWrap:hover {
-  filter:
-    brightness(0.85)
-    contrast(1.06)
-    saturate(0.8)
-    drop-shadow(0 40px 60px rgba(0, 0, 0, 0.95))
-    drop-shadow(0 0 80px rgba(8, 8, 8, 0.6));
-}
-
-.heroPreviewImg {
-  width: 100%;
-  display: block;
-}
-
-/* ── Bottom bar ── */
-.landingBottomBar {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  padding: 1.2rem 2rem 1.6rem;
-  border-top: 1px solid rgba(212, 160, 23, 0.1);
-}
-
-.startCta {
-  display: flex;
-  flex-direction: column;
-  gap: 0.55rem;
-}
-
-.yearLabel {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  color: rgba(212, 160, 23, 0.75);
-  letter-spacing: 0.1em;
-}
-
-.heroBadge {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.4rem;
-}
-
-.startBtn {
-  display: inline-block;
-  font-family: var(--font-mono);
-  font-size: 0.82rem;
-  font-weight: 400;
-  color: #080808;
-  background: #D4A017;
-  padding: 0.65rem 1.3rem;
-  cursor: pointer;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  text-decoration: none;
-  border: 1px solid #D4A017;
-  transition: all 0.2s ease;
-  user-select: none;
-}
-
-.startBtn:hover {
-  background: transparent;
-  color: #D4A017;
-}
-
-.startBtn:active {
-  transform: scale(0.96);
-  opacity: 0.85;
-  transition: all 0.1s ease;
-}
-
-/* ================================================================
-   AUTH PAGE
-   ================================================================ */
-
-.authPage {
-  position: relative;
-  width: 100vw;
-  min-height: 100vh;
-  overflow: hidden;
-  background: #080808;
-}
-
-.authContent {
-  min-height: 100vh;
-}
-
-.authCard {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem 1rem 4rem;
-}
-
-.authCardHeader {
-  margin-bottom: 2rem;
-  text-align: center;
-}
-
-.authScript {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-style: italic;
-  font-size: clamp(1rem, 1.8vw, 1.4rem);
-  color: rgba(212, 160, 23, 0.55);
-  margin-bottom: 0.2rem;
-  letter-spacing: -0.01em;
+  font-weight: 700;
+  font-size: clamp(56px, 10vw, 120px);
   line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--fg-1);
+  display: inline-flex;
+  align-items: baseline;
+  margin: 0;
 }
 
-.authCardTitle {
-  font-family: 'Anton', 'Syne', sans-serif;
-  font-size: clamp(3.5rem, 10vw, 8rem);
-  font-weight: 400;
-  color: #D4A017;
-  text-transform: uppercase;
-  line-height: 0.88;
-  letter-spacing: -0.01em;
-  text-shadow:
-    0 0 60px rgba(212, 160, 23, 0.2),
-    0 4px 30px rgba(0, 0, 0, 0.8);
+.heroTitle__dot {
+  display: inline-block;
+  width: 0.14em;
+  height: 0.14em;
+  background: var(--red-1);
+  margin: 0 0.04em 0.12em 0.03em;
+  align-self: flex-end;
+  box-shadow: 0 0 24px rgba(255, 75, 75, 0.5);
 }
 
-.authFormPanel {
-  width: 100%;
-  max-width: 420px;
-  background: rgba(4, 4, 4, 0.82);
-  border: 1px solid rgba(212, 160, 23, 0.22);
-  padding: 0 1.8rem 1.8rem;
+.heroSubtitle {
+  margin-top: 28px;
+  color: var(--fg-2);
+  font-size: 18px;
+  line-height: 1.5;
+  max-width: 640px;
 }
 
-.authTabs {
+.heroCtaRow {
+  margin-top: 36px;
   display: flex;
-  gap: 0;
-  margin: 0 -1.8rem 1.8rem;
-  width: calc(100% + 3.6rem);
-  border-bottom: 1px solid rgba(212, 160, 23, 0.22);
-}
-
-.authTab {
-  flex: 1;
-  padding: 0.75rem 1rem;
-  border: none;
-  background: transparent;
-  color: rgba(212, 160, 23, 0.75);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.72rem;
-  letter-spacing: 0.1em;
-  cursor: pointer;
-  transition: all 0.18s ease;
-  text-transform: uppercase;
-}
-
-.authTab:not(:last-child) {
-  border-right: 1px solid rgba(212, 160, 23, 0.22);
-}
-
-.authTab.active {
-  background: #D4A017;
-  color: #080808;
-  font-weight: 700;
-}
-
-.authTab:not(.active):hover {
-  color: #D4A017;
-  background: rgba(212, 160, 23, 0.08);
-}
-
-.authSubmitBtn {
-  width: 100%;
-  margin-top: 1.5rem;
-  padding: 0.9rem 1.5rem;
-  background: #D4A017;
-  color: #080808;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  border: 1px solid #D4A017;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: block;
-}
-
-.authSubmitBtn:hover {
-  background: transparent;
-  color: #D4A017;
-}
-
-.authSubmitBtn:active {
-  transform: scale(0.97);
-  opacity: 0.85;
-  transition: all 0.1s ease;
-}
-
-.authError {
-  color: #FF7070;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.78rem;
-  margin-top: 0.75rem;
-  padding: 0.5rem 0.8rem;
-  background: rgba(255, 112, 112, 0.06);
-  border: 1px solid rgba(255, 112, 112, 0.25);
-  width: 100%;
-  letter-spacing: 0.02em;
-}
-
-/* ================================================================
-   GUEST PAGE
-   ================================================================ */
-
-.guestPage {
-  position: relative;
-  width: 100vw;
-  min-height: 100vh;
-  overflow: hidden;
-  background: #080808;
-}
-
-.guestContent {
-  min-height: 100vh;
-}
-
-.guestMain {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+  gap: 8px;
+  flex-wrap: wrap;
   align-items: center;
+}
+
+/* ============================================================
+   STAGGERED RED-SQUARES DEMO (kit's animated trademark)
+   ============================================================ */
+
+.staggerStrip {
+  margin-top: 64px;
+  display: flex;
+  gap: 10px;
   justify-content: center;
-  padding: 3rem 1rem 4rem;
-  gap: 2.5rem;
+  flex-wrap: nowrap;
 }
 
-.guestHero {
-  text-align: center;
+.staggerSquare {
+  width: 26px;
+  height: 26px;
+  background: var(--red-1);
+  border-radius: 3px;
+  animation: heroStagger 1800ms cubic-bezier(0.83, 0, 0.17, 1) infinite alternate;
+  will-change: transform;
 }
 
-.guestTitle {
-  font-family: 'Anton', 'Syne', sans-serif;
-  font-size: clamp(3.5rem, 10vw, 7rem);
-  font-weight: 400;
-  color: #D4A017;
-  line-height: 0.88;
-  margin: 0.2rem 0 0;
-  text-align: center;
+@keyframes heroStagger {
+  from {
+    transform: translateX(-120px) rotate(-180deg);
+  }
+  to {
+    transform: translateX(120px) rotate(0deg);
+  }
 }
 
-.guestPanel {
-  width: 100%;
-  max-width: 420px;
-  background: rgba(4, 4, 4, 0.82);
-  border: 1px solid rgba(212, 160, 23, 0.22);
-  padding: 1.8rem;
-}
+/* ============================================================
+   HISTORY / LIST CARDS
+   ============================================================ */
 
-/* ================================================================
-   HISTORY PAGE
-   ================================================================ */
-
-.historyPage {
-  position: relative;
-  min-height: 100vh;
-  background: #080808;
-  overflow-x: hidden;
-}
-
-/* History uses position:fixed so the background stays put while the list scrolls */
-.historyCanvas {
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-}
-
-.historyOverlay {
-  position: fixed;
-  inset: 0;
-  z-index: 2;
-  background:
-    radial-gradient(ellipse at 50% 55%, rgba(8, 8, 8, 0.08) 0%, rgba(8, 8, 8, 0.46) 100%),
-    linear-gradient(to bottom, rgba(8,8,8,0.36) 0%, transparent 18%, transparent 76%, rgba(8,8,8,0.41) 100%);
-  pointer-events: none;
-}
-
-.historyContent {
-  min-height: 100vh;
-}
-
-.historyMain {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 3rem 2rem 4rem;
-  gap: 2.5rem;
-}
-
-.historyHeading {
-  align-self: flex-start;
-  width: 100%;
-  max-width: 680px;
-  margin: 0 auto;
-}
-
-.historyTitle {
-  font-family: 'Anton', 'Syne', sans-serif;
-  font-size: clamp(3.5rem, 10vw, 7rem);
-  font-weight: 400;
-  color: #D4A017;
-  line-height: 0.88;
-  margin: 0.2rem 0 0;
-  text-transform: uppercase;
-  letter-spacing: -0.01em;
-  text-shadow:
-    0 0 60px rgba(212, 160, 23, 0.2),
-    0 4px 30px rgba(0, 0, 0, 0.8);
-}
-
-.historyList {
-  width: 100%;
-  max-width: 680px;
-  display: flex;
-  flex-direction: column;
-}
-
-.historyCardItem {
-  background: rgba(4, 4, 4, 0.72);
-  border: 1px solid rgba(212, 160, 23, 0.18);
-  border-bottom: none;
-  padding: 1.2rem 1.5rem;
+.listCard {
+  background: var(--bg-2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  transition: background 0.15s, border-color 0.15s;
+  gap: 16px;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
   cursor: default;
 }
 
-.historyCardItem:last-child {
-  border-bottom: 1px solid rgba(212, 160, 23, 0.18);
+.listCard:hover {
+  border-color: rgba(255, 75, 75, 0.5);
+  background: var(--bg-3);
 }
 
-.historyCardItem:hover {
-  background: rgba(212, 160, 23, 0.05);
-  border-color: rgba(212, 160, 23, 0.38);
+.listCard__title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--fg-1);
+  letter-spacing: 0.04em;
 }
 
-.historyCardCode {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.92rem;
-  color: #D4A017;
-  letter-spacing: 0.06em;
+.listCard__title::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: var(--red-1);
 }
 
-.historyCardDate {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.75rem;
-  color: rgba(212, 160, 23, 0.45);
+.listCard__meta {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--fg-3);
   letter-spacing: 0.08em;
 }
 
-.historyEmpty {
+/* ============================================================
+   EMPTY STATES
+   ============================================================ */
+
+.emptyState {
   text-align: center;
-  padding: 4rem 2rem;
+  padding: 60px 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
-  border: 1px solid rgba(212, 160, 23, 0.12);
-  background: rgba(4, 4, 4, 0.6);
+  gap: 12px;
+  background: var(--bg-2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-lg);
   width: 100%;
 }
 
-.historyEmptySymbol {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 2.5rem;
-  color: rgba(212, 160, 23, 0.3);
+.emptyState__glyph {
+  font-family: var(--font-mono);
+  font-size: 28px;
+  color: var(--fg-4);
   letter-spacing: 0.1em;
 }
 
-.historyEmpty h3 {
-  font-family: 'Anton', 'Syne', sans-serif;
-  font-size: 1.5rem;
-  font-weight: 400;
-  color: #D4A017;
+.emptyState__title {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--fg-1);
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  margin: 0;
 }
 
-.historyEmpty p {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.78rem;
-  color: rgba(212, 160, 23, 0.4);
+.emptyState__hint {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--fg-3);
   letter-spacing: 0.06em;
+  margin: 0;
 }
 
-/* ================================================================
-   HOME PAGE (legacy blue theme — used by home.jsx)
-   ================================================================ */
-
-.navBar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.9rem 2rem;
-  background: rgba(7, 8, 15, 0.7);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.navBar h2 {
-  font-family: var(--font-display);
-  font-size: 1.4rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--text);
-}
-
-.navBar .MuiIconButton-root {
-  color: rgba(221, 230, 240, 0.55) !important;
-  transition: all 0.2s ease !important;
-}
-
-.navBar .MuiIconButton-root:hover {
-  color: var(--text) !important;
-  background: rgba(255, 255, 255, 0.06) !important;
-}
-
-.navBar .MuiButton-root {
-  color: rgba(221, 230, 240, 0.55) !important;
-  font-family: var(--font-body) !important;
-  font-weight: 500 !important;
-  text-transform: none !important;
-  border-radius: var(--radius-sm) !important;
-  font-size: 0.9rem !important;
-  transition: all 0.2s ease !important;
-  padding: 0.4rem 0.9rem !important;
-}
-
-.navBar .MuiButton-root:hover {
-  color: var(--text) !important;
-  background: rgba(255, 255, 255, 0.06) !important;
-}
-
-.meetContainer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem 2rem;
-  min-height: calc(100vh - 62px);
-  gap: 8vw;
-}
-
-.leftPanel {
-  display: flex;
-  align-items: center;
-  flex: 1;
-  max-width: 480px;
-}
-
-.leftPanel > div {
-  width: 100%;
-}
-
-.leftPanel h2 {
-  font-family: var(--font-display);
-  font-size: clamp(1.6rem, 3vw, 2.3rem);
-  font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: -0.025em;
-  color: var(--text);
-  margin-bottom: 2rem;
-}
-
-.meetInputGroup {
-  display: flex;
-  gap: 10px;
-  align-items: stretch;
-}
-
-.meetInputGroup .MuiTextField-root .MuiOutlinedInput-root {
-  background: rgba(255, 255, 255, 0.04) !important;
-  border-radius: 10px !important;
-  color: var(--text) !important;
-  font-family: var(--font-mono) !important;
-  font-size: 0.95rem !important;
-  letter-spacing: 0.04em !important;
-}
-
-.meetInputGroup .MuiTextField-root .MuiOutlinedInput-notchedOutline {
-  border-color: rgba(255, 255, 255, 0.1) !important;
-}
-
-.meetInputGroup .MuiTextField-root .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
-  border-color: rgba(0, 200, 255, 0.35) !important;
-}
-
-.meetInputGroup .MuiTextField-root .Mui-focused .MuiOutlinedInput-notchedOutline {
-  border-color: var(--accent) !important;
-  box-shadow: 0 0 0 3px rgba(0, 200, 255, 0.1) !important;
-}
-
-.meetInputGroup .MuiTextField-root .MuiInputLabel-root {
-  color: var(--text-sub) !important;
-  font-family: var(--font-body) !important;
-}
-
-.meetInputGroup .MuiTextField-root .MuiInputLabel-root.Mui-focused {
-  color: var(--accent) !important;
-}
-
-.meetInputGroup .MuiButton-contained {
-  background: linear-gradient(135deg, var(--accent) 0%, #0099CC 100%) !important;
-  color: #07080F !important;
-  font-weight: 700 !important;
-  font-family: var(--font-body) !important;
-  border-radius: 10px !important;
-  text-transform: none !important;
-  padding: 0 1.6rem !important;
-  font-size: 0.95rem !important;
-  box-shadow: 0 4px 24px rgba(0, 200, 255, 0.25) !important;
-  transition: all 0.25s cubic-bezier(0.23, 1, 0.32, 1) !important;
-  min-width: 80px !important;
-}
-
-.meetInputGroup .MuiButton-contained:hover {
-  box-shadow: 0 8px 40px rgba(0, 200, 255, 0.45) !important;
-  transform: translateY(-1px) !important;
-}
-
-.rightPanel {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
-  max-width: 420px;
-}
-
-.rightPanel img {
-  width: 100%;
-  max-width: 380px;
-  height: auto;
-  border-radius: 20px;
-  filter: drop-shadow(0 20px 60px rgba(0, 200, 255, 0.1));
-}
-
-/* ================================================================
-   MOBILE RESPONSIVE — LANDING & SHARED NAV
-   ================================================================ */
+/* ============================================================
+   MOBILE RESPONSIVE
+   ============================================================ */
 
 @media (max-width: 768px) {
-  /* ── Container: unlock scroll so stacked hero isn't clipped ── */
-  .landingPageContainer {
-    height: auto;
-    min-height: 100vh;
-    min-height: 100dvh;
-    overflow-y: auto;
-  }
-
-  .landingContent {
-    height: auto;
-    min-height: 100vh;
-    min-height: 100dvh;
-  }
-
-  /* ── Top bar: tighten padding, allow nav links to wrap ── */
-  .landingTopBar {
-    padding: 0.85rem 1.25rem;
+  .topBar {
+    padding: 12px 16px;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 8px;
   }
 
-  .landingTopRight {
-    gap: 0.5rem;
+  .topBar__group {
+    gap: 4px;
   }
 
-  .authTopLeft {
-    gap: 0.5rem;
+  .heroTitle {
+    font-size: clamp(40px, 14vw, 80px);
   }
 
-  /* ── Hero: stack left/preview vertically, center content ── */
-  .landingHero {
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 1rem 1.25rem 0;
-    gap: 0.5rem;
+  .heroSubtitle {
+    font-size: 16px;
+    margin-top: 20px;
   }
 
-  .heroLeft {
-    align-items: center;
-    text-align: center;
+  .heroCtaRow {
+    margin-top: 24px;
   }
 
-  /* Tighter clamp so the headline doesn't bleed off narrow screens */
-  .heroLine {
-    font-size: clamp(3.8rem, 21vw, 5.5rem);
-    line-height: 0.9;
+  .staggerStrip {
+    margin-top: 40px;
+    gap: 6px;
   }
 
-  .heroPreview {
-    max-width: 100%;
-    width: 100%;
-    align-items: center;
-  }
-
-  /* ── Bottom bar: stack CTA and badge vertically ── */
-  .landingBottomBar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-    padding: 1rem 1.25rem 1.5rem;
+  .staggerSquare {
+    width: 18px;
+    height: 18px;
   }
 }

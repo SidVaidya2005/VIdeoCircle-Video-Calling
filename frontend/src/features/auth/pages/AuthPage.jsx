@@ -3,7 +3,6 @@ import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import { Snackbar } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import useASCIICanvas from '../../../shared/hooks/useASCIICanvas';
 import { AuthContext } from '../context/AuthContext';
 
 export default function AuthPage() {
@@ -16,17 +15,16 @@ export default function AuthPage() {
     const [open, setOpen] = React.useState(false);
 
     const { handleRegister, handleLogin } = React.useContext(AuthContext);
-    const canvasRef = useASCIICanvas();
-    const router = useNavigate();
+    const navigate = useNavigate();
 
-    let handleAuth = async () => {
+    const handleAuth = async () => {
         try {
             if (formState === 0) {
                 await handleLogin(username, password);
-                router('/guest');
+                navigate('/guest');
             }
             if (formState === 1) {
-                let result = await handleRegister(name, username, password);
+                const result = await handleRegister(name, username, password);
                 setUsername('');
                 setMessage(result);
                 setOpen(true);
@@ -44,95 +42,162 @@ export default function AuthPage() {
         if (e.key === 'Enter') handleAuth();
     };
 
-    return (
-        <div className="authPage">
-            <canvas ref={canvasRef} className="pageCanvas" />
-            <div className="pageOverlay" />
+    const isSignIn = formState === 0;
 
-            <div className="pageContent authContent">
-                <header className="landingTopBar">
-                    <nav className="authTopLeft">
-                        <span className="navLinkBracket" onClick={() => router("/")}>
-                            [HOME]
-                        </span>
-                        <span className="bracketLabel">[V_C_26]</span>
-                    </nav>
-                    <span className="landingBrand">VideoCircle®</span>
-                    <span className="bracketLabel">[AUTH]</span>
+    return (
+        <div className="page">
+            <div className="pageContent">
+                <header className="topBar">
+                    <div className="topBar__group">
+                        <button className="btn nav" onClick={() => navigate('/')}>HOME</button>
+                        <div className="brand">
+                            <span>video</span>
+                            <span className="brand__dot" />
+                            <span>circle</span>
+                        </div>
+                    </div>
+                    <span className="overline">AUTH</span>
                 </header>
 
-                <div className="authCard">
-                    <div className="authCardHeader">
-                        <p className="authScript">
-                            {formState === 0 ? 'welcome back,' : 'join the circle,'}
-                        </p>
-                        <h2 className="authCardTitle">
-                            {formState === 0 ? 'SIGN IN' : 'REGISTER'}
-                        </h2>
-                    </div>
+                <main
+                    style={{
+                        position: 'relative',
+                        flex: 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '60px 20px',
+                        overflow: 'hidden',
+                        minHeight: 'calc(100vh - 60px)',
+                    }}
+                >
+                    <div className="gridBackdrop" />
 
-                    <div className="authFormPanel">
-                        <div className="authTabs">
+                    <div
+                        style={{
+                            position: 'relative',
+                            width: '100%',
+                            maxWidth: 440,
+                            background: 'var(--bg-2)',
+                            border: '1px solid rgba(255,255,255,0.08)',
+                            borderRadius: 'var(--radius-lg)',
+                            padding: '8px',
+                        }}
+                    >
+                        {/* Tabs */}
+                        <div
+                            style={{
+                                display: 'flex',
+                                gap: 4,
+                                padding: 4,
+                                background: 'var(--bg-3)',
+                                borderRadius: 'var(--radius-md)',
+                                marginBottom: 22,
+                            }}
+                        >
                             <button
-                                className={`authTab${formState === 0 ? ' active' : ''}`}
+                                className={`chip${isSignIn ? ' active' : ''}`}
+                                style={{ flex: 1, justifyContent: 'center' }}
                                 onClick={() => setFormState(0)}
                             >
-                                [SIGN IN]
+                                SIGN IN
                             </button>
                             <button
-                                className={`authTab${formState === 1 ? ' active' : ''}`}
+                                className={`chip${!isSignIn ? ' active' : ''}`}
+                                style={{ flex: 1, justifyContent: 'center' }}
                                 onClick={() => setFormState(1)}
                             >
-                                [REGISTER]
+                                REGISTER
                             </button>
                         </div>
 
-                        <Box component="form" noValidate sx={{ width: '100%' }} onKeyDown={handleKeyDown}>
-                            {formState === 1 && (
+                        <div style={{ padding: '0 18px 22px' }}>
+                            <div className="heroOverline" style={{ marginBottom: 14 }}>
+                                <span className="heroOverline__dot" />
+                                {isSignIn ? 'WELCOME BACK' : 'JOIN THE CIRCLE'}
+                            </div>
+                            <h1
+                                style={{
+                                    fontFamily: 'var(--font-mono)',
+                                    fontSize: 34,
+                                    fontWeight: 700,
+                                    letterSpacing: '-0.02em',
+                                    margin: '0 0 18px',
+                                    lineHeight: 1.05,
+                                }}
+                            >
+                                {isSignIn ? 'Sign in.' : 'Create account.'}
+                            </h1>
+
+                            <Box component="form" noValidate sx={{ width: '100%' }} onKeyDown={handleKeyDown}>
+                                {formState === 1 && (
+                                    <TextField
+                                        margin="normal"
+                                        required
+                                        fullWidth
+                                        label="Full Name"
+                                        value={name}
+                                        autoFocus
+                                        onChange={(e) => setName(e.target.value)}
+                                    />
+                                )}
                                 <TextField
                                     margin="normal"
                                     required
                                     fullWidth
-                                    label="Full Name"
-                                    value={name}
-                                    autoFocus
-                                    onChange={(e) => setName(e.target.value)}
+                                    label="Username"
+                                    value={username}
+                                    autoFocus={isSignIn}
+                                    onChange={(e) => setUsername(e.target.value)}
                                 />
-                            )}
-                            <TextField
-                                margin="normal"
-                                required
-                                fullWidth
-                                label="Username"
-                                value={username}
-                                autoFocus={formState === 0}
-                                onChange={(e) => setUsername(e.target.value)}
-                            />
-                            <TextField
-                                margin="normal"
-                                required
-                                fullWidth
-                                label="Password"
-                                value={password}
-                                type="password"
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
+                                <TextField
+                                    margin="normal"
+                                    required
+                                    fullWidth
+                                    label="Password"
+                                    value={password}
+                                    type="password"
+                                    onChange={(e) => setPassword(e.target.value)}
+                                />
 
-                            {error && <p className="authError">{error}</p>}
+                                {error && (
+                                    <p
+                                        style={{
+                                            color: 'var(--red-1)',
+                                            fontFamily: 'var(--font-mono)',
+                                            fontSize: '0.8rem',
+                                            margin: '14px 0 0',
+                                            padding: '8px 12px',
+                                            background: 'rgba(255, 75, 75, 0.08)',
+                                            border: '1px solid rgba(255, 75, 75, 0.35)',
+                                            borderRadius: 'var(--radius-xs)',
+                                            letterSpacing: '0.02em',
+                                        }}
+                                    >
+                                        [ERR] {error}
+                                    </p>
+                                )}
 
-                            <button
-                                type="button"
-                                className="authSubmitBtn"
-                                onClick={handleAuth}
-                            >
-                                {formState === 0 ? '[SIGN IN →]' : '[CREATE ACCOUNT →]'}
-                            </button>
-                        </Box>
+                                <button
+                                    type="button"
+                                    className="btn primary"
+                                    onClick={handleAuth}
+                                    style={{ width: '100%', marginTop: 20 }}
+                                >
+                                    {isSignIn ? 'SIGN IN →' : 'CREATE ACCOUNT →'}
+                                </button>
+                            </Box>
+                        </div>
                     </div>
-                </div>
+                </main>
             </div>
 
-            <Snackbar open={open} autoHideDuration={4000} message={message} onClose={() => setOpen(false)} />
+            <Snackbar
+                open={open}
+                autoHideDuration={4000}
+                message={message}
+                onClose={() => setOpen(false)}
+            />
         </div>
     );
 }

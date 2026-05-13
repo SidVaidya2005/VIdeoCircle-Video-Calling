@@ -1,22 +1,4 @@
-:root {
-  --bg: #07080F;
-  --surface: rgba(255, 255, 255, 0.04);
-  --surface-hover: rgba(255, 255, 255, 0.08);
-  --accent: #00C8FF;
-  --accent-glow: rgba(0, 200, 255, 0.15);
-  --cta: #FF9D42;
-  --cta-glow: rgba(255, 157, 66, 0.3);
-  --text: #DDE6F0;
-  --text-sub: rgba(221, 230, 240, 0.5);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --radius: 14px;
-  --radius-sm: 8px;
-  --font-display: 'Syne', sans-serif;
-  --font-body: 'DM Sans', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
-  --mouse-x: 50vw;
-  --mouse-y: 50vh;
-}
+/* Reset + base body styling. Tokens live in shared/styles/tokens.css. */
 
 * {
   margin: 0;
@@ -24,40 +6,17 @@
   box-sizing: border-box;
 }
 
-body {
-  margin: 0;
-  font-family: var(--font-body);
-  background-color: var(--bg);
-  color: var(--text);
+html, body {
+  background-color: var(--bg-1);
+  color: var(--fg-1);
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
   min-height: 100vh;
   overflow-x: hidden;
-}
-
-/* Noise texture overlay */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-  opacity: 0.038;
-  pointer-events: none;
-}
-
-/* Mouse spotlight */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  background: radial-gradient(
-    700px circle at var(--mouse-x) var(--mouse-y),
-    rgba(0, 200, 255, 0.055),
-    transparent 55%
-  );
-  pointer-events: none;
 }
 
 #root {
@@ -65,6 +24,18 @@ body::after {
   z-index: 2;
 }
 
-code {
+code, pre {
   font-family: var(--font-mono);
+}
+
+/* Selection — warm signal red */
+::selection {
+  background: rgba(255, 75, 75, 0.3);
+  color: var(--fg-1);
+}
+
+/* Default focus ring — red, kit-faithful */
+:focus-visible {
+  outline: 2px solid var(--red-1);
+  outline-offset: 2px;
 }

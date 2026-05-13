@@ -1,10 +1,129 @@
-:root {
-  --gold-primary: #D4A017;
-  --gold-primary-soft: rgba(212, 160, 23, 0.55);
-  --gold-primary-dim: rgba(212, 160, 23, 0.25);
-  --gold-primary-faint: rgba(212, 160, 23, 0.03);
-  --gold-glow: rgba(185, 138, 18, 0.42);
+/* ============================================================
+   VideoCircle — Design Tokens
+   Adapted from the Anime.js handoff kit (Black-orange accent / project).
+   Source of truth for colors, type, spacing, radii, easings.
+   ============================================================ */
 
-  --ink-primary: #080808;
-  --ink-secondary: rgba(8, 8, 8, 0.8);
+:root {
+  /* --- Neutrals: warm near-black bg + warm off-white fg --- */
+  --black-1: #252423;
+  --black-2: #262422;
+  --black-3: #262422;
+  --black-4: #262422;
+  --black-5: #272421;
+  --black-6: #272421;
+
+  --white-1: #f6f4f2;
+  --white-2: #b8b6b3;
+  --white-3: #9a9593;
+  --white-4: #524f49;
+  --white-5: #413d39;
+  --white-6: #312e2b;
+
+  /* --- Signal accent: red (the kit's signature) --- */
+  --red-1: #ff4b4b;
+  --red-2: #bf3e3e;
+  --red-3: #9e3838;
+  --red-4: #532a29;
+  --red-5: #412726;
+  --red-6: #322523;
+
+  /* Secondary accents from the kit (used sparingly) */
+  --cyan-1: #4BFFFD;
+  --green-1: #00FF5D;
+  --yellow-1: #ffcc2a;
+
+  /* --- Semantic backgrounds (ascending elevation) --- */
+  --bg-1: #252423; /* page */
+  --bg-2: #2a2928; /* card */
+  --bg-3: #2f2e2d; /* raised */
+  --bg-4: #353433; /* overlay */
+  --bg-5: #3a3938; /* higher overlay */
+
+  /* --- Semantic foregrounds (descending emphasis) --- */
+  --fg-1: #dddcda; /* primary text */
+  --fg-2: #c6c3c1; /* secondary text */
+  --fg-3: #96918f; /* tertiary / labels */
+  --fg-4: #65655e; /* muted / disabled */
+  --fg-5: #33332e; /* divider / border */
+
+  /* --- The single signal color (semantic alias) --- */
+  --accent: var(--red-1);
+  --accent-glow: 0 0 24px rgba(255, 75, 75, 0.5);
+
+  /* --- Radii: never razor-sharp --- */
+  --radius-xs: 0.25rem;  /* inputs, small chips */
+  --radius-sm: 0.4rem;   /* buttons */
+  --radius-md: 0.6rem;   /* ease/chip buttons */
+  --radius-lg: 1rem;     /* cards, panels */
+  --radius-xl: 1.25rem;  /* hero panels */
+  --radius-pill: 999px;
+
+  /* --- Spacing --- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+
+  /* --- Type families: mono only --- */
+  --font-mono: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, monospace;
+  --font-system: var(--font-mono);
+  /* legacy aliases — old code may still reference these */
+  --font-display: var(--font-mono);
+  --font-body: var(--font-mono);
+
+  /* --- Terminal type scale --- */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-md: 1.125rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 2rem;
+  --text-3xl: 2.5rem;
+  --text-4xl: 3.5rem;
+  --text-5xl: 5rem;
+
+  --leading-tight: 1.1;
+  --leading-snug: 1.25;
+  --leading-normal: 1.5;
+
+  --tracking-tight: -0.01em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.06em;   /* overlines */
+  --tracking-wider: 0.12em;
+
+  /* --- Borders / strokes --- */
+  --border-subtle: 1px solid rgba(255, 255, 255, 0.08);
+  --border-soft: 1px solid rgba(255, 255, 255, 0.15);
+  --border-dashed: 1px dashed rgba(255, 255, 255, 0.5);
+  --border-dotted: 1px dotted rgba(255, 255, 255, 0.5);
+
+  /* --- Grid backdrop --- */
+  --grid-line-minor: rgba(255, 255, 255, 0.04);
+  --grid-line-major: rgba(255, 255, 255, 0.06);
+
+  /* --- Shadows --- */
+  --shadow-soft: 0 10px 10px 0 var(--bg-1);
+  --shadow-ring: 0 0 0 1px rgba(255, 255, 255, 0.1);
+  --glow-red: 0 0 24px rgba(255, 75, 75, 0.5);
+
+  /* --- Motion easings --- */
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out-quint: cubic-bezier(0.83, 0, 0.17, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+  --duration-slow: 600ms;
+
+  /* --- Legacy aliases — kept so any stragglers don't break --- */
+  --bg: var(--bg-1);
+  --surface: var(--bg-2);
+  --surface-hover: var(--bg-3);
+  --text: var(--fg-1);
+  --text-sub: var(--fg-3);
 }

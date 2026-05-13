@@ -8,7 +8,6 @@ export default function ChatPanel({ showModal, setModal, onNewMessage }) {
     const [message, setMessage] = useState('');
     const prevLengthRef = useRef(0);
 
-    // Notify parent of new messages so it can increment the badge
     useEffect(() => {
         if (chatMessages.length > prevLengthRef.current) {
             onNewMessage?.();
@@ -28,28 +27,28 @@ export default function ChatPanel({ showModal, setModal, onNewMessage }) {
         <div className={styles.chatRoom}>
             <div className={styles.chatContainer}>
                 <div className={styles.chatHeader}>
-                    <h1>[CHAT]</h1>
+                    <h1>CHAT</h1>
                     <button
                         className={styles.chatCloseBtn}
                         onClick={() => setModal(false)}
                         aria-label="Close chat"
                     >
-                        [×]
+                        ✕
                     </button>
                 </div>
 
                 <div className={styles.chattingDisplay}>
                     {chatMessages.length ? (
                         chatMessages.map((msg) => (
-                            <div style={{ marginBottom: '20px' }} key={`${msg.from?.identity}-${msg.timestamp}`}>
-                                <p style={{ fontWeight: 'bold' }}>
+                            <div className={styles.chatMsg} key={`${msg.from?.identity}-${msg.timestamp}`}>
+                                <p className={styles.chatMsgFrom}>
                                     {msg.from?.name || msg.from?.identity || 'Unknown'}
                                 </p>
-                                <p>{msg.message}</p>
+                                <p className={styles.chatMsgBody}>{msg.message}</p>
                             </div>
                         ))
                     ) : (
-                        <p>No Messages Yet</p>
+                        <p className={styles.chatEmpty}>NO MESSAGES YET</p>
                     )}
                 </div>
 
@@ -58,15 +57,16 @@ export default function ChatPanel({ showModal, setModal, onNewMessage }) {
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage()}
-                        label="Enter Your chat"
+                        label="Message"
                         variant="outlined"
+                        size="small"
                     />
                     <Button
                         variant="contained"
                         onClick={sendMessage}
                         disabled={isSending || !message.trim()}
                     >
-                        [SEND]
+                        SEND
                     </Button>
                 </div>
             </div>
