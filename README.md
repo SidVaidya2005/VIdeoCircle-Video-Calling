@@ -1,5 +1,4 @@
 <div align="center">
-  <img src="frontend/public/logo3.png" alt="VideoCircle Logo" width="120" />
 
   <h1>VideoCircle</h1>
 
