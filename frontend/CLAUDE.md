@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with th
 ## Stack & conventions
 
 - **Create React App (react-scripts 5)** + React 18 + React Router v6. Not Vite, not Next — `npm start` is the CRA dev server.
-- **MUI v5** for inputs/icons (`@mui/material`, `@mui/icons-material`). The MUI theme `shared/theme/goldTheme.js` is wired globally in `app/providers.jsx` via `<ThemeProvider>` — anything you build inherits it. Most pages still carry inline `sx` overrides from the pre-theme era; cleaning those up is out of scope for now.
+- **MUI v5** for inputs/icons (`@mui/material`, `@mui/icons-material`). The MUI theme `shared/theme/goldTheme.js` is wired globally in `app/providers.jsx` via `<ThemeProvider>` — the filename is legacy, but the theme now implements the warm near-black + red-signal mono system. Most pages still carry inline `sx` overrides from the pre-theme era; cleaning those up is out of scope for now.
 - **LiveKit React SDK** (`@livekit/components-react`, `livekit-client`) drives all in-call state. Hooks like `useLocalParticipant`, `useTracks`, `useChat` only work inside `<LiveKitRoom>` — see "Component placement rules" below.
 
 ## Commands
@@ -15,9 +15,13 @@ npm start                    # CRA dev server on http://localhost:3000
 npm run build                # production build → frontend/build (consumed by vercel.json)
 npm test                     # CRA Jest in watch mode
 npm test -- App.test.js      # single test file (pass through CRA to Jest after `--`)
+npm run lint                 # eslint "src/**/*.{js,jsx}"
+npm run lint:fix             # eslint "src/**/*.{js,jsx}" --fix
+npm run format:check
+npm run format
 ```
 
-There is no lint script — ESLint runs implicitly via `react-scripts`. Only `App.test.js` exists; the test infrastructure is essentially unused.
+Only `App.test.js` exists; the test infrastructure is essentially unused.
 
 ## Required environment (`frontend/.env`)
 
@@ -56,13 +60,12 @@ src/
       pages/MeetPage.jsx           // /:meetingCode
       styles/videoComponent.module.css
   shared/
-    hooks/useASCIICanvas.js
     lib/apiClient.js               // single Axios instance + Authorization interceptor
     lib/env.js                     // only place that reads process.env.*
     lib/storage.js                 // wraps localStorage("token")
     styles/globals.css             // formerly App.css — imported once in index.js
-    styles/tokens.css              // CSS custom properties (--gold-primary, etc.)
-    theme/goldTheme.js
+    styles/tokens.css              // CSS custom properties (warm near-black/red signal system)
+    theme/goldTheme.js             // legacy filename; current MUI theme for the red-signal system
 ```
 
 ## Routing layout (`app/routes.jsx`)
@@ -108,13 +111,13 @@ These components use LiveKit hooks and **must** be rendered inside `<LiveKitRoom
 
 ## UI conventions
 
-For the full visual system (color ladder, type scale, component patterns), read `../.claude/specs/design.md` before any non-trivial UI work — the notes below are a quick reference, not the full system.
+The visual system now lives in code: `shared/styles/tokens.css`, `shared/styles/globals.css`, `shared/theme/goldTheme.js`, and `features/meet/styles/videoComponent.module.css`. There is no checked-in `../.claude/specs/design.md` at the moment.
 
-- **Bracket-notation buttons** (`[JOIN]`, `[CHAT]`, `[×]`) are the visual language — preserve them in any new control.
-- **Fonts**: `Anton` (display headings) and `JetBrains Mono` (body, inputs, controls). Loaded via `index.css` / `globals.css`.
-- **Color**: gold `#D4A017` on near-black `#080808`. Prefer the CSS vars in `shared/styles/tokens.css` (`--gold-primary`, `--ink-primary`, …) for new code; existing files still use the literals.
+- **Visual language**: warm near-black surfaces, off-white text, red `#ff4b4b` signal accents, CSS grid backdrops, red square/dot motifs, compact uppercase controls.
+- **Fonts**: mono-only. `JetBrains Mono` is the main family with `IBM Plex Mono` and system monospace fallbacks. The old display-font notes are stale.
+- **Color tokens**: prefer `shared/styles/tokens.css` (`--bg-*`, `--fg-*`, `--red-*`, `--accent`, spacing/radius/type tokens) instead of hard-coded literals for new CSS.
 - **Mouse parallax**: `--mouse-x` / `--mouse-y` are updated on every mousemove from the listener in `app/App.jsx`.
-- **ASCII canvas backgrounds**: `shared/hooks/useASCIICanvas.js` returns a ref you attach to a `<canvas>`. It self-manages resize and a 80ms repaint interval. Multiple canvases on one page are fine but expensive — don't mount it inside `<LiveKitRoom>`.
+- **Grid backdrops**: `.gridBackdrop` / `.gridBackdrop--fixed` are pure CSS utilities in `shared/styles/globals.css`; there is no `useASCIICanvas` hook in the current tree.
 
 ## Don'ts
 

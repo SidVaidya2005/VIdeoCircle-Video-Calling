@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with th
 ## Stack & conventions
 
 - **Express 5** with native ESM (`"type": "module"`). Use `import` syntax and include the `.js` extension on relative imports — Node ESM does not auto-resolve.
-- No TypeScript, no linter, **no tests** in this package. Don't add a test runner without asking.
+- No TypeScript. ESLint uses the flat config in `eslint.config.js`; Prettier is available through npm scripts. There are **no tests** in this package; don't add a test runner without asking.
 - **Layered architecture**: `app.js` is boot only. Each domain lives in `modules/<name>/` as `routes → controller → service → model`. Cross-cutting concerns are in `middleware/`. Env reads are confined to `config/env.js`.
 
 ## Layout
@@ -46,9 +46,13 @@ src/
 npm run dev      # nodemon src/app.js — hot reload
 npm start        # node src/app.js
 npm run prod     # pm2 src/app.js
+npm run lint     # eslint "src/**/*.js"
+npm run lint:fix # eslint "src/**/*.js" --fix
+npm run format:check
+npm run format
 ```
 
-There is no test/lint script.
+There is no test script.
 
 ## Required environment
 

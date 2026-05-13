@@ -46,12 +46,19 @@ Per-package details:
 # Backend
 cd backend && npm install && npm run dev      # nodemon on PORT (default 8000)
 cd backend && npm start                       # production node
-# No tests, no lint script.
+cd backend && npm run lint                    # ESLint over src/**/*.js
+cd backend && npm run lint:fix                # ESLint autofix
+cd backend && npm run format:check            # Prettier check
+cd backend && npm run format                  # Prettier write
 
 # Frontend
 cd frontend && npm install && npm start       # CRA dev server on :3000
 cd frontend && npm run build                  # production build → frontend/build
 cd frontend && npm test -- <pattern>          # CRA/Jest, single file: append the filename pattern
+cd frontend && npm run lint                   # ESLint over src/**/*.{js,jsx}
+cd frontend && npm run lint:fix               # ESLint autofix
+cd frontend && npm run format:check           # Prettier check
+cd frontend && npm run format                 # Prettier write
 ```
 
 There is no root-level package.json or task runner. Run scripts from inside each package.
@@ -63,10 +70,9 @@ There is no root-level package.json or task runner. Run scripts from inside each
 - The frontend route `/:meetingCode` is a **catch-all** for meeting codes (`frontend/src/app/routes.jsx`). It is registered last; any new top-level route (e.g. `/settings`) must be added **above** it or it will be swallowed as a meeting code.
 - `LIVEKIT_URL` (backend) and `REACT_APP_LIVEKIT_URL` (frontend) must point at the same LiveKit project — the backend embeds it in the token response and the frontend uses its own env var to actually connect. Mismatched values produce a connect that fails after the JWT validates.
 
-## Deeper context — `.claude/specs/`
+## Documentation map
 
-Three checked-in design docs that go beyond what fits in CLAUDE.md. Read them when the cross-cutting notes here aren't enough:
-
-- `.claude/specs/design.md` — full Gold Brutalist visual system (color tokens, type scale, component patterns). Read before any UI/styling work.
-- `.claude/specs/techstack.md` — every dependency with version + role.
-- `.claude/specs/workflow.md` — first-time setup, daily dev loop, deploy flow.
+- `README.md` — user-facing overview, setup, API reference, deployment notes.
+- `backend/CLAUDE.md` — backend architecture, commands, auth/session details, endpoint conventions.
+- `frontend/CLAUDE.md` — frontend routing, auth, LiveKit component placement, and UI conventions.
+- There is no checked-in `.claude/specs/` directory right now; don't reference design or workflow docs there unless they are added later.
