@@ -7,7 +7,7 @@
 
   <p>
     <a href="https://zoom-clone-teal-gamma.vercel.app" target="_blank">
-      <img src="https://img.shields.io/badge/Live%20Demo-zoom--clone--teal--gamma.vercel.app-D4A017?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo" />
+      <img src="https://img.shields.io/badge/Live%20Demo-zoom--clone--teal--gamma.vercel.app-FF4B4B?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo" />
     </a>
   </p>
 
@@ -35,7 +35,7 @@ VideoCircle is a full-stack video conferencing application that lets users host 
 - **Guest access** — join any meeting without registering
 - **Meeting history** — authenticated users can view a log of all past sessions
 - **Token-based auth** — secure registration and login with bcrypt-hashed passwords and 7-day session tokens
-- **Gold brutalist UI** — distinctive aesthetic with animated ASCII canvas backgrounds, Anton/JetBrains Mono typography, and sharp-cornered bracket-notation controls
+- **Signal-grid UI** — warm near-black surfaces, red signal accents, JetBrains Mono typography, CSS grid backdrops, and compact uppercase controls
 
 ---
 
@@ -66,6 +66,7 @@ VideoCircle is a full-stack video conferencing application that lets users host 
 | **Backend**          | Node.js, Express 5, `livekit-server-sdk`                           |
 | **Database**         | MongoDB Atlas (Mongoose ODM)                                       |
 | **Authentication**   | Custom token (crypto hex), bcrypt (10 rounds)                      |
+| **Tooling**          | ESLint 9, Prettier 3                                               |
 | **Process Manager**  | PM2 (production), Nodemon (development)                            |
 | **Frontend Hosting** | Vercel                                                             |
 | **Backend Hosting**  | Railway (serverless-compatible)                                    |
@@ -151,13 +152,12 @@ VideoCircle/
 │       │       ├── pages/MeetPage.jsx        # /:meetingCode
 │       │       └── styles/videoComponent.module.css
 │       └── shared/
-│           ├── hooks/useASCIICanvas.js
 │           ├── lib/apiClient.js              # single Axios instance + Authorization interceptor
 │           ├── lib/env.js                    # the only file that reads process.env.*
 │           ├── lib/storage.js                # wraps localStorage("token")
 │           ├── styles/globals.css            # imported once in index.js
-│           ├── styles/tokens.css             # CSS custom properties (gold/ink palette)
-│           └── theme/goldTheme.js            # MUI theme (wired via providers.jsx)
+│           ├── styles/tokens.css             # CSS custom properties (near-black/red palette)
+│           └── theme/goldTheme.js            # legacy filename; current MUI theme
 │
 ├── backend/                                  # Express 5 ESM (Railway)
 │   └── src/
@@ -263,6 +263,25 @@ Start the frontend:
 npm start          # Dev server on http://localhost:3000
 ```
 
+### 4. Development checks
+
+Run these from the repository root:
+
+```bash
+# Backend
+(cd backend && npm run lint)
+(cd backend && npm run lint:fix)
+(cd backend && npm run format:check)
+(cd backend && npm run format)
+
+# Frontend
+(cd frontend && npm run lint)
+(cd frontend && npm run lint:fix)
+(cd frontend && npm run format:check)
+(cd frontend && npm run format)
+(cd frontend && npm run build)
+```
+
 ---
 
 ## Usage
@@ -335,8 +354,8 @@ All routes are rate limited to **100 requests per 15 minutes** per IP.
 // Request
 { "name": "Jane Doe", "username": "janedoe", "password": "secret123" }
 
-// Response 200
-{ "message": "User registered successfully" }
+// Response 201
+{ "message": "User registered" }
 ```
 
 **POST `/login`**
@@ -346,7 +365,24 @@ All routes are rate limited to **100 requests per 15 minutes** per IP.
 { "username": "janedoe", "password": "secret123" }
 
 // Response 200
-{ "token": "a3f9c2d1...", "username": "janedoe", "name": "Jane Doe" }
+{ "token": "a3f9c2d1..." }
+```
+
+**GET `/verify`**
+
+```json
+// Response 200
+{ "message": "Valid" }
+```
+
+**POST `/add_to_activity`**
+
+```json
+// Request
+{ "meetingCode": "my-team-standup" }
+
+// Response 201
+{ "message": "Added code to history" }
 ```
 
 **GET `/get_all_activity`**
@@ -357,6 +393,16 @@ All routes are rate limited to **100 requests per 15 minutes** per IP.
   { "meetingCode": "my-team-standup", "date": "2026-03-30T10:00:00.000Z" },
   { "meetingCode": "design-review", "date": "2026-03-28T15:30:00.000Z" }
 ]
+```
+
+**GET `/get-token?room=my-team-standup&username=Jane`**
+
+```json
+// Response 200
+{
+  "token": "eyJhbGciOiJIUzI1NiIs...",
+  "url": "wss://your-project.livekit.cloud"
+}
 ```
 
 ---
@@ -405,7 +451,7 @@ Contributions are welcome! To get started:
 4. Push to your branch: `git push origin feature/your-feature`
 5. Open a pull request
 
-Please follow the existing code style (gold brutalist UI design, bracket-notation controls, JetBrains Mono typography) when contributing frontend changes.
+Please follow the existing frontend style: warm near-black surfaces, red signal accents, JetBrains Mono typography, grid backdrops, compact uppercase controls, and MUI components themed through `shared/theme/goldTheme.js`.
 
 ---
 
