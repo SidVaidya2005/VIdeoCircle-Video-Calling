@@ -12,10 +12,8 @@ export function errorHandler(err, req, res, _next) {
 }
 
 export function notFoundHandler(req, res) {
-  res
-    .status(404)
-    .json({
-      status: 404,
-      message: `Not found: ${req.method} ${req.originalUrl}`,
-    });
+  res.status(404).json({
+    status: 404,
+    message: `Not found: ${req.method} ${req.originalUrl}`,
+  });
 }

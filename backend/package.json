@@ -11,7 +11,9 @@
     "lint": "eslint \"src/**/*.js\"",
     "lint:fix": "eslint \"src/**/*.js\" --fix",
     "format": "prettier --write \"src/**/*.{js,json,md}\"",
-    "format:check": "prettier --check \"src/**/*.{js,json,md}\""
+    "format:check": "prettier --check \"src/**/*.{js,json,md}\"",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "author": "apnacollege",
   "license": "ISC",
@@ -36,6 +38,8 @@
     "eslint": "^9.14.0",
     "eslint-config-prettier": "^9.1.0",
     "globals": "^15.12.0",
-    "prettier": "^3.3.3"
+    "prettier": "^3.3.3",
+    "supertest": "^7.0.0",
+    "vitest": "^2.1.5"
   }
 }
