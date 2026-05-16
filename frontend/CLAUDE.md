@@ -12,7 +12,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with th
 
 ```bash
 npm start                    # CRA dev server on http://localhost:3000
-npm run build                # production build → frontend/build (consumed by vercel.json)
+npm run build                # production build → frontend/build (publish dir on Render static site)
 npm test                     # CRA Jest in watch mode
 npm test -- App.test.js      # single test file (pass through CRA to Jest after `--`)
 npm run lint                 # eslint "src/**/*.{js,jsx}"

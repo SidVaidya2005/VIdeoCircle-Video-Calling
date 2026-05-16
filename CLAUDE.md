@@ -6,8 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Two-package monorepo (no workspaces tool — each package installs independently):
 
-- `frontend/` — React 18 (CRA) app, deployed to Vercel. See `frontend/CLAUDE.md`.
-- `backend/` — Express 5 (ESM) REST API, deployed to Railway. See `backend/CLAUDE.md`.
+- `frontend/` — React 18 (CRA) app, deployed to Render (static site). See `frontend/CLAUDE.md`.
+- `backend/` — Express 5 (ESM) REST API, deployed to Render (web service). See `backend/CLAUDE.md`.
 
 For anything beyond the cross-cutting notes below, read the package-specific CLAUDE.md.
 
@@ -65,7 +65,7 @@ There is no root-level package.json or task runner. Run scripts from inside each
 
 ## Cross-cutting gotchas
 
-- `vercel.json` is gitignored — the Vercel project config lives outside the repo, so don't assume it will be present in clones. (`CLAUDE.md` files **are** tracked.)
+- No `render.yaml` is checked in — Render service settings (build command, env vars, root directory) live in the Render dashboard. The legacy `.vercel/` and `vercel.json` ignore patterns also remain in `.gitignore` in case someone re-deploys to Vercel. (`CLAUDE.md` files **are** tracked.)
 - Both `.env` files are required for any meaningful local dev. Templates: `backend/.env.example` and `frontend/.env.example` — copy these to `.env` and fill in values. The frontend will silently fail to connect to video calls if `REACT_APP_LIVEKIT_URL` is missing — there is no fallback.
 - The frontend route `/:meetingCode` is a **catch-all** for meeting codes (`frontend/src/app/routes.jsx`). It is registered last; any new top-level route (e.g. `/settings`) must be added **above** it or it will be swallowed as a meeting code.
 - `LIVEKIT_URL` (backend) and `REACT_APP_LIVEKIT_URL` (frontend) must point at the same LiveKit project — the backend embeds it in the token response and the frontend uses its own env var to actually connect. Mismatched values produce a connect that fails after the JWT validates.

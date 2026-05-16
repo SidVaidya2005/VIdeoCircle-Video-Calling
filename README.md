@@ -5,8 +5,8 @@
   <p><strong>A real-time video conferencing platform for the browser — instant rooms, WebRTC media, and a signal-grid interface.</strong></p>
 
   <p>
-    <a href="https://zoom-clone-teal-gamma.vercel.app" target="_blank">
-      <img src="https://img.shields.io/badge/Live%20Demo-Open-FF4B4B?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo" />
+    <a href="https://videocircle.onrender.com" target="_blank">
+      <img src="https://img.shields.io/badge/Live%20Demo-Open-FF4B4B?style=for-the-badge&logo=render&logoColor=white" alt="Live Demo" />
     </a>
   </p>
 
@@ -15,8 +15,8 @@
     <img src="https://img.shields.io/badge/Express-5-000000?style=flat-square&logo=express&logoColor=white" />
     <img src="https://img.shields.io/badge/LiveKit-SFU-E5484D?style=flat-square&logo=webrtc&logoColor=white" />
     <img src="https://img.shields.io/badge/MongoDB-Atlas-47A248?style=flat-square&logo=mongodb&logoColor=white" />
-    <img src="https://img.shields.io/badge/Vercel-Frontend-000?style=flat-square&logo=vercel&logoColor=white" />
-    <img src="https://img.shields.io/badge/Railway-Backend-0B0D0E?style=flat-square&logo=railway&logoColor=white" />
+    <img src="https://img.shields.io/badge/Render-Frontend-46E3B7?style=flat-square&logo=render&logoColor=white" />
+    <img src="https://img.shields.io/badge/Render-Backend-46E3B7?style=flat-square&logo=render&logoColor=white" />
   </p>
 </div>
 
@@ -28,7 +28,9 @@
 
 The product is built around a minimal, opinionated visual system — warm near-black surfaces, red signal accents, JetBrains Mono typography, and CSS-grid backdrops — and a clean separation between the thin REST API and the real-time media plane.
 
-**Live demo:** [zoom-clone-teal-gamma.vercel.app](https://zoom-clone-teal-gamma.vercel.app)
+**Live demo:** [videocircle.onrender.com](https://videocircle.onrender.com)
+
+> ⏱ The demo runs on Render's free tier — both services sleep after ~15 minutes of inactivity. The first request after a sleep can take 30–60 seconds to wake the backend; subsequent requests are instant.
 
 ---
 
@@ -202,7 +204,7 @@ VideoCircle/
 └── README.md
 ```
 
-> `vercel.json` is intentionally git-ignored — Vercel project settings hold the build config, not the repo.
+> Render reads service settings (build command, env vars, root directory) from the Render dashboard rather than a file in the repo. No `render.yaml` is checked in.
 
 ---
 
@@ -356,8 +358,12 @@ All routes are rate limited to **100 requests / 15 minutes** per IP, plus strict
 
 ## Deployment
 
-- **Frontend (Vercel)** — static CRA build. The `vercel.json` config lives in the Vercel project settings and points the build at the `frontend/` package. Set `REACT_APP_SERVER_URL` and `REACT_APP_LIVEKIT_URL` in the project's environment variables.
-- **Backend (Railway / any Node host)** — standard Express REST API with no persistent WebSockets. Production start is `npm start`. Works on Railway, Render, Fly.io, Vercel Functions, or AWS Lambda.
+Currently deployed on **Render** (frontend + backend, free tier).
+
+- **Frontend** — static CRA build served as a Render Static Site. Root directory `frontend/`, build command `npm install && npm run build`, publish directory `build`. Set `REACT_APP_SERVER_URL=https://videocircle-backend.onrender.com` and `REACT_APP_LIVEKIT_URL` in the service's environment variables.
+- **Backend** — Render Web Service. Root directory `backend/`, build command `npm install`, start command `npm start`. Set `MONGO_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET`, and `LIVEKIT_URL` (must match the frontend's `REACT_APP_LIVEKIT_URL`). Render injects `PORT` automatically.
+
+The backend holds no persistent WebSockets, so it also works on Railway, Fly.io, Vercel Functions, or AWS Lambda if you want to migrate.
 
 ---
 
